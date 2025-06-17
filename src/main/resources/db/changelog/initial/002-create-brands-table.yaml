@@ -1,0 +1,83 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-brands-table
+      author: Ilia_P
+      changes:
+        - createTable:
+            tableName: brands
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: logo_path
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: country
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: website_url
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValue: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: INTEGER
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 002-create-brands-indexes
+      author: Ilia_P
+      changes:
+        - createIndex:
+            indexName: idx_brands_name
+            tableName: brands
+            columns:
+              - column:
+                  name: name
+        - createIndex:
+            indexName: idx_brands_active_sort
+            tableName: brands
+            columns:
+              - column:
+                  name: is_active
+              - column:
+                  name: sort_order

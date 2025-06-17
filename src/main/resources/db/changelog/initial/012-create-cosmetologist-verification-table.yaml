@@ -1,0 +1,121 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-create-cosmetologist-verification-table
+      author: Ilia_P
+      changes:
+        - createTable:
+            tableName: cosmetologist_verification
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cosmetologist_verification_user
+                    references: users(id)
+                    deleteCascade: true
+              - column:
+                  name: diploma_file_path
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: diploma_original_filename
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: institution_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: graduation_year
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: specialization
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: license_number
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: admin_comment
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: rejection_reason
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: verified_by
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_cosmetologist_verification_admin
+                    references: users(id)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: verified_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 012-create-cosmetologist-verification-indexes
+      author: Ilia_P
+      changes:
+        - createIndex:
+            indexName: idx_cosmetologist_verification_user
+            tableName: cosmetologist_verification
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_cosmetologist_verification_status
+            tableName: cosmetologist_verification
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            indexName: idx_cosmetologist_verification_verified_by
+            tableName: cosmetologist_verification
+            columns:
+              - column:
+                  name: verified_by
+        - createIndex:
+            indexName: idx_cosmetologist_verification_created
+            tableName: cosmetologist_verification
+            columns:
+              - column:
+                  name: created_at

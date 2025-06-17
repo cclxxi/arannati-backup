@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-create-wishlist-table
+      author: Ilia_P
+      changes:
+        - createTable:
+            tableName: wishlist
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wishlist_user
+                    references: users(id)
+                    deleteCascade: true
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wishlist_product
+                    references: products(id)
+                    deleteCascade: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 011-create-wishlist-indexes
+      author: Ilia_P
+      changes:
+        - createIndex:
+            indexName: idx_wishlist_user
+            tableName: wishlist
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_wishlist_product
+            tableName: wishlist
+            columns:
+              - column:
+                  name: product_id
+        - createIndex:
+            indexName: idx_wishlist_user_product
+            tableName: wishlist
+            unique: true
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: product_id

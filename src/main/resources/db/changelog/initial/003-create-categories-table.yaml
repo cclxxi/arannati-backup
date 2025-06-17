@@ -1,0 +1,86 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-categories-table
+      author: Ilia_P
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: parent_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_categories_parent
+                    references: categories(id)
+                    deleteCascade: true
+              - column:
+                  name: image_path
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValue: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: INTEGER
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-create-categories-indexes
+      author: Ilia_P
+      changes:
+        - createIndex:
+            indexName: idx_categories_name
+            tableName: categories
+            columns:
+              - column:
+                  name: name
+        - createIndex:
+            indexName: idx_categories_parent
+            tableName: categories
+            columns:
+              - column:
+                  name: parent_id
+        - createIndex:
+            indexName: idx_categories_active_sort
+            tableName: categories
+            columns:
+              - column:
+                  name: is_active
+              - column:
+                  name: sort_order

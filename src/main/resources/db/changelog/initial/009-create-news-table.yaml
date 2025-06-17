@@ -1,0 +1,137 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-create-news-table
+      author: Ilia_P
+      changes:
+        - createTable:
+            tableName: news
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: preview_text
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: image_path
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_news_author
+                    references: users(id)
+              - column:
+                  name: is_published
+                  type: BOOLEAN
+                  defaultValue: 'false'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_featured
+                  type: BOOLEAN
+                  defaultValue: 'false'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slug
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+                    unique: true
+              - column:
+                  name: meta_title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: meta_description
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: sort_order
+                  type: INTEGER
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: views_count
+                  type: INTEGER
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: published_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 009-create-news-indexes
+      author: Ilia_P
+      changes:
+        - createIndex:
+            indexName: idx_news_title
+            tableName: news
+            columns:
+              - column:
+                  name: title
+        - createIndex:
+            indexName: idx_news_slug
+            tableName: news
+            columns:
+              - column:
+                  name: slug
+        - createIndex:
+            indexName: idx_news_published
+            tableName: news
+            columns:
+              - column:
+                  name: is_published
+              - column:
+                  name: published_at
+        - createIndex:
+            indexName: idx_news_featured
+            tableName: news
+            columns:
+              - column:
+                  name: is_featured
+              - column:
+                  name: sort_order
+        - createIndex:
+            indexName: idx_news_author
+            tableName: news
+            columns:
+              - column:
+                  name: author_id

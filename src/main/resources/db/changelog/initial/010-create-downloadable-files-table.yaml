@@ -1,0 +1,125 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010-create-downloadable-files-table
+      author: Ilia_P
+      changes:
+        - createTable:
+            tableName: downloadable_files
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: file_path
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: original_filename
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_size
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: mime_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: access_level
+                  type: VARCHAR(20)
+                  defaultValue: PUBLIC
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValue: 'true'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: download_count
+                  type: INTEGER
+                  defaultValue: '0'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: INTEGER
+                  defaultValue: '0'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: uploaded_by
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_downloadable_files_user
+                    references: users(id)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 010-create-downloadable-files-indexes
+      author: Ilia_P
+      changes:
+        - createIndex:
+            indexName: idx_downloadable_files_title
+            tableName: downloadable_files
+            columns:
+              - column:
+                  name: title
+        - createIndex:
+            indexName: idx_downloadable_files_access
+            tableName: downloadable_files
+            columns:
+              - column:
+                  name: access_level
+              - column:
+                  name: is_active
+        - createIndex:
+            indexName: idx_downloadable_files_category
+            tableName: downloadable_files
+            columns:
+              - column:
+                  name: category
+              - column:
+                  name: sort_order
+        - createIndex:
+            indexName: idx_downloadable_files_uploaded_by
+            tableName: downloadable_files
+            columns:
+              - column:
+                  name: uploaded_by
