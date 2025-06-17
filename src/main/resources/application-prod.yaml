@@ -23,6 +23,7 @@ spring:
     default-schema: arannati
     parameters:
       schema: arannati
+    liquibase-schema: arannati
 
   # Email
   mail:
