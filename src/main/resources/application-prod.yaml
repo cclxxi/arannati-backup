@@ -1,6 +1,7 @@
 # Production profile
 spring:
   # Database (через переменные окружения)
+  # Note: DATABASE_URL should include "?currentSchema=arannati" parameter
   datasource:
     url: ${DATABASE_URL}
     username: ${DB_USERNAME}
@@ -11,6 +12,17 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
+    properties:
+      hibernate:
+        default_schema: arannati
+
+  # Liquibase
+  liquibase:
+    change-log: classpath:db/changelog/master.yaml
+    enabled: true
+    default-schema: arannati
+    parameters:
+      schema: arannati
 
   # Email
   mail:

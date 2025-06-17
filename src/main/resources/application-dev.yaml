@@ -2,7 +2,7 @@
 spring:
   # Database
   datasource:
-    url: jdbc:postgresql://localhost:5432/arannati
+    url: jdbc:postgresql://localhost:5432/arannati?currentSchema=arannati
     username: "arannati_user"
     password: "280904"
     driver-class-name: org.postgresql.Driver
@@ -16,6 +16,7 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: arannati
 
   # Liquibase
   liquibase:
