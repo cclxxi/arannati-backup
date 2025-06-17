@@ -1,0 +1,30 @@
+# General settings
+spring:
+  application:
+    name: "Arannati"
+  profiles:
+    active: dev
+  
+  # FreeMarker
+  freemarker:
+    cache: false
+    template-loader-path: classpath:/templates/
+
+  # File upload
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# Server
+server:
+  port: 8080
+
+# Logging
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

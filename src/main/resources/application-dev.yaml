@@ -1,0 +1,28 @@
+# Development profile
+spring:
+  # Database
+  datasource:
+    url: jdbc:postgresql://localhost:5432/arannati
+    username: "arannati_user"
+    password: "280904"
+    driver-class-name: org.postgresql.Driver
+
+  # JPA/Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Liquibase
+  liquibase:
+    change-log: classpath:db/changelog/master.yaml
+    enabled: true
+
+  # Email (для разработки - консоль)
+  mail:
+    host: localhost
+    port: 1025
