@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface BrandRepository extends JpaRepository<Brand, Long> {
 
-    List<Brand> findByActiveTrueOrderBySortOrderAscNameAsc();
+    List<Brand> findByActiveIsTrueOrderBySortOrderAscNameAsc();
 
     Page<Brand> findByActiveIsTrueOrderBySortOrderAscNameAsc(Pageable pageable);
 
@@ -21,7 +21,7 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
 
     boolean existsByName(String name);
 
-    @Query("SELECT b FROM Brand b WHERE b.isActive = true AND " +
+    @Query("SELECT b FROM Brand b WHERE b.active = true AND " +
             "LOWER(b.name) LIKE LOWER(CONCAT('%', :search, '%'))")
     List<Brand> searchActiveBrands(String search);
 

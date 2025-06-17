@@ -48,10 +48,10 @@ public class Product {
     private BigDecimal salePrice;
 
     @Column(name = "is_professional", nullable = false)
-    private boolean isProfessional;
+    private boolean professional;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    private boolean active;
 
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;

@@ -21,7 +21,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
     Optional<Wishlist> findByUserIdAndProductId(Long userId, Long productId);
 
     @Query("SELECT w FROM Wishlist w JOIN w.product p " +
-            "WHERE w.user.id = :userId AND p.isActive = true")
+            "WHERE w.user.id = :userId AND p.active = true")
     List<Wishlist> findActiveWishlistItemsByUserId(@Param("userId") Long userId);
 
     boolean existsByUserIdAndProductId(Long userId, Long productId);

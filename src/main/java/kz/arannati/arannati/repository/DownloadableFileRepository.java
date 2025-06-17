@@ -20,17 +20,17 @@ public interface DownloadableFileRepository extends JpaRepository<DownloadableFi
 
     Page<DownloadableFile> findByCategoryAndActiveIsTrueOrderBySortOrderAscTitleAsc(String category, Pageable pageable);
 
-    @Query("SELECT df FROM DownloadableFile df WHERE df.isActive = true AND " +
+    @Query("SELECT df FROM DownloadableFile df WHERE df.active = true AND " +
             "(df.accessLevel = 'PUBLIC' OR " +
             "(df.accessLevel = 'COSMETOLOGIST_ONLY' AND :isCosmetologist = true)) " +
             "ORDER BY df.sortOrder ASC, df.title ASC")
     List<DownloadableFile> findAccessibleFiles(@Param("isCosmetologist") boolean isCosmetologist);
 
-    @Query("SELECT df FROM DownloadableFile df WHERE df.isActive = true AND " +
+    @Query("SELECT df FROM DownloadableFile df WHERE df.active = true AND " +
             "LOWER(df.title) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<DownloadableFile> searchFiles(@Param("search") String search, Pageable pageable);
 
-    @Query("SELECT DISTINCT df.category FROM DownloadableFile df WHERE df.category IS NOT NULL AND df.isActive = true")
+    @Query("SELECT DISTINCT df.category FROM DownloadableFile df WHERE df.category IS NOT NULL AND df.active = true")
     List<String> findDistinctCategories();
 
     @Modifying

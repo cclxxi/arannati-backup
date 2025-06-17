@@ -28,7 +28,7 @@ public class ProductImage {
     private String altText;
 
     @Column(name = "is_main", nullable = false)
-    private boolean isMain;
+    private boolean main;
 
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;

@@ -21,7 +21,7 @@ public interface ProductImageRepository extends JpaRepository<ProductImage, Long
     Optional<ProductImage> findFirstImageForProduct(@Param("productId") Long productId);
 
     @Modifying
-    @Query("UPDATE ProductImage pi SET pi.isMain = false WHERE pi.product.id = :productId")
+    @Query("UPDATE ProductImage pi SET pi.main = false WHERE pi.product.id = :productId")
     void clearMainImageForProduct(@Param("productId") Long productId);
 
     void deleteByProductId(Long productId);

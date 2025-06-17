@@ -24,13 +24,13 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     boolean existsByNameAndParentId(String name, Long parentId);
 
-    @Query("SELECT c FROM Category c WHERE c.isActive = true AND c.parent IS NULL")
+    @Query("SELECT c FROM Category c WHERE c.active = true AND c.parent IS NULL")
     Page<Category> findMainCategories(Pageable pageable);
 
-    @Query("SELECT c FROM Category c WHERE c.parent.id = :parentId AND c.isActive = true")
+    @Query("SELECT c FROM Category c WHERE c.parent.id = :parentId AND c.active = true")
     Page<Category> findSubcategories(@Param("parentId") Long parentId, Pageable pageable);
 
-    @Query("SELECT c FROM Category c WHERE c.isActive = true AND " +
+    @Query("SELECT c FROM Category c WHERE c.active = true AND " +
             "LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%'))")
     List<Category> searchActiveCategories(@Param("search") String search);
 

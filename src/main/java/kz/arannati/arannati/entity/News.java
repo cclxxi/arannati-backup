@@ -34,10 +34,10 @@ public class News {
     private User author;
 
     @Column(name = "is_published", nullable = false)
-    private boolean isPublished;
+    private boolean published;
 
     @Column(name = "is_featured", nullable = false)
-    private boolean isFeatured;
+    private boolean featured;
 
     @Column(unique = true)
     private String slug;

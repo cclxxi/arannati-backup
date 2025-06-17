@@ -25,24 +25,24 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Page<Product> findByBrandIdAndActiveIsTrueOrderBySortOrderAscNameAsc(Long brandId, Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.isActive = true AND p.isProfessional = false " +
+    @Query("SELECT p FROM Product p WHERE p.active = true AND p.professional = false " +
             "ORDER BY p.sortOrder ASC, p.name ASC")
     Page<Product> findRegularProducts(Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.isActive = true AND p.isProfessional = true " +
+    @Query("SELECT p FROM Product p WHERE p.active = true AND p.professional = true " +
             "ORDER BY p.sortOrder ASC, p.name ASC")
     Page<Product> findProfessionalProducts(Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.isActive = true AND " +
+    @Query("SELECT p FROM Product p WHERE p.active = true AND " +
             "(LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(p.description) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Product> searchProducts(@Param("search") String search, Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.isActive = true AND " +
+    @Query("SELECT p FROM Product p WHERE p.active = true AND " +
             "(:categoryId IS NULL OR p.category.id = :categoryId) AND " +
             "(:brandId IS NULL OR p.brand.id = :brandId) AND " +
-            "(:isProfessional IS NULL OR p.isProfessional = :isProfessional) AND " +
+            "(:isProfessional IS NULL OR p.professional = :isProfessional) AND " +
             "(:minPrice IS NULL OR p.regularPrice >= :minPrice) AND " +
             "(:maxPrice IS NULL OR p.regularPrice <= :maxPrice)")
     Page<Product> findProductsWithFilters(
@@ -53,17 +53,17 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("maxPrice") BigDecimal maxPrice,
             Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.isActive = true AND p.stockQuantity > 0 " +
+    @Query("SELECT p FROM Product p WHERE p.active = true AND p.stockQuantity > 0 " +
             "ORDER BY p.createdAt DESC")
     Page<Product> findNewProducts(Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.isActive = true AND p.salePrice IS NOT NULL " +
+    @Query("SELECT p FROM Product p WHERE p.active = true AND p.salePrice IS NOT NULL " +
             "ORDER BY ((p.regularPrice - p.salePrice) / p.regularPrice) DESC")
     Page<Product> findProductsOnSale(Pageable pageable);
 
     List<Product> findTop8ByActiveIsTrueOrderByCreatedAtDesc();
 
-    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.isActive = true AND p.id != :excludeId")
+    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.active = true AND p.id != :excludeId")
     List<Product> findSimilarProductsBase(@Param("categoryId") Long categoryId,
                                          @Param("excludeId") Long excludeId);
 

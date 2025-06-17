@@ -32,7 +32,7 @@ public class Brand {
     private String websiteUrl;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    private boolean active;
 
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;

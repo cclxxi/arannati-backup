@@ -36,7 +36,7 @@ public class Category {
     private String imagePath;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    private boolean active;
 
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;

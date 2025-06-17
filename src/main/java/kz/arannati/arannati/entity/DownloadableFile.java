@@ -41,7 +41,7 @@ public class DownloadableFile {
     private String category;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    private boolean active;
 
     @Column(name = "download_count", nullable = false)
     private Integer downloadCount;

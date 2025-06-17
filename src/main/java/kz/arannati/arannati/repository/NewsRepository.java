@@ -27,7 +27,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     Page<News> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    @Query("SELECT n FROM News n WHERE n.isPublished = true AND " +
+    @Query("SELECT n FROM News n WHERE n.published = true AND " +
             "(LOWER(n.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(n.content) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<News> searchPublishedNews(@Param("search") String search, Pageable pageable);

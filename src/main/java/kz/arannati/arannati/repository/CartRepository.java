@@ -18,7 +18,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     Optional<Cart> findByUserIdAndProductId(Long userId, Long productId);
 
     @Query("SELECT c FROM Cart c JOIN c.product p " +
-            "WHERE c.user.id = :userId AND p.isActive = true")
+            "WHERE c.user.id = :userId AND p.active = true")
     List<Cart> findActiveCartItemsByUserId(@Param("userId") Long userId);
 
     @Modifying

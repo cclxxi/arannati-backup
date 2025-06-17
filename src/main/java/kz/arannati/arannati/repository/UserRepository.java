@@ -22,17 +22,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRoleAndActiveIsTrue(String role);
 
-    @Query("SELECT u FROM User u WHERE u.role = 'COSMETOLOGIST' AND u.isVerified = true AND u.isActive = true")
+    @Query("SELECT u FROM User u WHERE u.role = 'COSMETOLOGIST' AND u.isVerified = true AND u.active = true")
     List<User> findVerifiedCosmetologists();
 
-    @Query("SELECT u FROM User u WHERE u.role = 'COSMETOLOGIST' AND u.isVerified = false AND u.isActive = true")
+    @Query("SELECT u FROM User u WHERE u.role = 'COSMETOLOGIST' AND u.isVerified = false AND u.active = true")
     Page<User> findUnverifiedCosmetologists(Pageable pageable);
 
     @Query("SELECT u FROM User u WHERE " +
             "(LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-            "AND u.isActive = true")
+            "AND u.active = true")
     Page<User> searchActiveUsers(@Param("search") String search, Pageable pageable);
 
     long countByRoleAndActiveIsTrue(String role);
