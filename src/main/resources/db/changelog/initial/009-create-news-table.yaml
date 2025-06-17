@@ -70,13 +70,13 @@ databaseChangeLog:
               - column:
                   name: sort_order
                   type: INTEGER
-                  defaultValue: 0
+                  defaultValue: '0'
                   constraints:
                     nullable: false
               - column:
                   name: views_count
                   type: INTEGER
-                  defaultValue: 0
+                  defaultValue: '0'
                   constraints:
                     nullable: false
               - column:
