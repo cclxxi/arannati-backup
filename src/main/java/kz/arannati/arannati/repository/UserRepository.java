@@ -1,5 +1,6 @@
 package kz.arannati.arannati.repository;
 
+import kz.arannati.arannati.entity.Role;
 import kz.arannati.arannati.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,12 +21,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    List<User> findByRoleAndActiveIsTrue(String role);
+    List<User> findByRoleNameAndActiveIsTrue(String roleName);
 
-    @Query("SELECT u FROM User u WHERE u.role = 'COSMETOLOGIST' AND u.isVerified = true AND u.active = true")
+    @Query("SELECT u FROM User u WHERE u.role.name = 'COSMETOLOGIST' AND u.isVerified = true AND u.active = true")
     List<User> findVerifiedCosmetologists();
 
-    @Query("SELECT u FROM User u WHERE u.role = 'COSMETOLOGIST' AND u.isVerified = false AND u.active = true")
+    @Query("SELECT u FROM User u WHERE u.role.name = 'COSMETOLOGIST' AND u.isVerified = false AND u.active = true")
     Page<User> findUnverifiedCosmetologists(Pageable pageable);
 
     @Query("SELECT u FROM User u WHERE " +
@@ -35,5 +36,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "AND u.active = true")
     Page<User> searchActiveUsers(@Param("search") String search, Pageable pageable);
 
-    long countByRoleAndActiveIsTrue(String role);
+    long countByRoleNameAndActiveIsTrue(String roleName);
 }

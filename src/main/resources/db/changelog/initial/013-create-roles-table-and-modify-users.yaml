@@ -1,0 +1,106 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013-create-roles-table
+      author: system
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 013-insert-default-roles
+      author: system
+      changes:
+        - sql:
+            sql: INSERT INTO roles (name, created_at, updated_at) SELECT DISTINCT role, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP FROM users;
+
+  - changeSet:
+      id: 013-add-role-id-to-users
+      author: system
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 013-update-role-id-in-users
+      author: system
+      changes:
+        - sql:
+            sql: UPDATE users SET role_id = (SELECT id FROM roles WHERE roles.name = users.role);
+
+  - changeSet:
+      id: 013-make-role-id-not-nullable
+      author: system
+      changes:
+        - addNotNullConstraint:
+            tableName: users
+            columnName: role_id
+            constraintName: nn_users_role_id
+
+  - changeSet:
+      id: 013-add-foreign-key-to-roles
+      author: system
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: users
+            baseColumnNames: role_id
+            constraintName: fk_users_roles
+            referencedTableName: roles
+            referencedColumnNames: id
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+
+  - changeSet:
+      id: 013-drop-role-column
+      author: system
+      changes:
+        - dropColumn:
+            tableName: users
+            columnName: role
+
+  - changeSet:
+      id: 013-create-roles-indexes
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_roles_name
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+        - createIndex:
+            indexName: idx_users_role_id
+            tableName: users
+            columns:
+              - column:
+                  name: role_id

@@ -1,8 +1,10 @@
 package kz.arannati.arannati.service.impl;
 
 import kz.arannati.arannati.dto.UserDTO;
+import kz.arannati.arannati.entity.Role;
 import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.repository.UserRepository;
+import kz.arannati.arannati.service.RoleService;
 import kz.arannati.arannati.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleService roleService;
 
     @Override
     public UserDTO convertToDto(User user) {
@@ -33,7 +36,7 @@ public class UserServiceImpl implements UserService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .phone(user.getPhone())
-                .role(user.getRole())
+                .role(user.getRole() != null ? user.getRole().getName() : null)
                 .isVerified(user.isVerified())
                 .isActive(user.isActive())
                 .createdAt(user.getCreatedAt())
@@ -53,7 +56,12 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setPhone(userDTO.getPhone());
-        user.setRole(userDTO.getRole());
+
+        // Get or create role based on role name
+        if (userDTO.getRole() != null) {
+            user.setRole(roleService.getOrCreateRole(userDTO.getRole()));
+        }
+
         user.setVerified(userDTO.isVerified());
         user.setActive(userDTO.isActive());
         user.setCreatedAt(userDTO.getCreatedAt());
@@ -84,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> findByRoleAndActiveIsTrue(String role) {
-        return userRepository.findByRoleAndActiveIsTrue(role)
+        return userRepository.findByRoleNameAndActiveIsTrue(role)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -122,7 +130,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public long countByRoleAndActiveIsTrue(String role) {
-        return userRepository.countByRoleAndActiveIsTrue(role);
+        return userRepository.countByRoleNameAndActiveIsTrue(role);
     }
 
     @Override
