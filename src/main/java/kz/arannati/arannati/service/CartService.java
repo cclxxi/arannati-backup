@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.CartDTO;
 import kz.arannati.arannati.entity.Cart;
 
 import java.util.List;
@@ -7,11 +8,11 @@ import java.util.Optional;
 
 public interface CartService {
 
-    List<Cart> findByUserIdOrderByCreatedAtAsc(Long userId);
+    List<CartDTO> findByUserIdOrderByCreatedAtAsc(Long userId);
 
-    Optional<Cart> findByUserIdAndProductId(Long userId, Long productId);
+    Optional<CartDTO> findByUserIdAndProductId(Long userId, Long productId);
 
-    List<Cart> findActiveCartItemsByUserId(Long userId);
+    List<CartDTO> findActiveCartItemsByUserId(Long userId);
 
     void deleteAllByUserId(Long userId);
 
@@ -20,12 +21,16 @@ public interface CartService {
     long countByUserId(Long userId);
 
     Integer getTotalQuantityByUserId(Long userId);
-    
-    Cart save(Cart cart);
-    
-    Optional<Cart> findById(Long id);
-    
+
+    CartDTO save(CartDTO cartDTO);
+
+    Optional<CartDTO> findById(Long id);
+
     void deleteById(Long id);
-    
-    List<Cart> findAll();
+
+    List<CartDTO> findAll();
+
+    CartDTO convertToDto(Cart cart);
+
+    Cart convertToEntity(CartDTO cartDTO);
 }

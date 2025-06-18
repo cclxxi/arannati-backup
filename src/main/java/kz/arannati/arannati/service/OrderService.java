@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.OrderDTO;
 import kz.arannati.arannati.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,24 +12,24 @@ import java.util.Optional;
 
 public interface OrderService {
 
-    Optional<Order> findByOrderNumber(String orderNumber);
+    Optional<OrderDTO> findByOrderNumber(String orderNumber);
 
-    Page<Order> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+    Page<OrderDTO> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
-    List<Order> findByUserIdOrderByCreatedAtDesc(Long userId);
+    List<OrderDTO> findByUserIdOrderByCreatedAtDesc(Long userId);
 
-    Page<Order> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable);
+    Page<OrderDTO> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable);
 
-    Page<Order> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<OrderDTO> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Order> findOrdersWithFilters(
+    Page<OrderDTO> findOrdersWithFilters(
             String status,
             Long userId,
             LocalDateTime startDate,
             LocalDateTime endDate,
             Pageable pageable);
 
-    Page<Order> searchOrders(String search, Pageable pageable);
+    Page<OrderDTO> searchOrders(String search, Pageable pageable);
 
     long countOrdersByDateRange(LocalDateTime startDate, LocalDateTime endDate);
 
@@ -37,12 +38,16 @@ public interface OrderService {
     long countByStatus(String status);
 
     long countByUserId(Long userId);
-    
-    Order save(Order order);
-    
-    Optional<Order> findById(Long id);
-    
+
+    OrderDTO save(OrderDTO orderDTO);
+
+    Optional<OrderDTO> findById(Long id);
+
     void deleteById(Long id);
-    
-    List<Order> findAll();
+
+    List<OrderDTO> findAll();
+
+    OrderDTO convertToDto(Order order);
+
+    Order convertToEntity(OrderDTO orderDTO);
 }

@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.CosmetologistVerificationDTO;
 import kz.arannati.arannati.entity.CosmetologistVerification;
 import kz.arannati.arannati.entity.User;
 import org.springframework.data.domain.Page;
@@ -10,27 +11,31 @@ import java.util.Optional;
 
 public interface CosmetologistVerificationService {
 
-    Optional<CosmetologistVerification> findByUserId(Long userId);
+    Optional<CosmetologistVerificationDTO> findByUserId(Long userId);
 
-    Page<CosmetologistVerification> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable);
+    Page<CosmetologistVerificationDTO> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable);
 
-    List<CosmetologistVerification> findByStatusOrderByCreatedAtDesc(String status);
+    List<CosmetologistVerificationDTO> findByStatusOrderByCreatedAtDesc(String status);
 
-    Page<CosmetologistVerification> findPendingVerifications(Pageable pageable);
+    Page<CosmetologistVerificationDTO> findPendingVerifications(Pageable pageable);
 
-    Page<CosmetologistVerification> findVerificationsByAdmin(Long adminId, Pageable pageable);
+    Page<CosmetologistVerificationDTO> findVerificationsByAdmin(Long adminId, Pageable pageable);
 
     boolean existsByUserIdAndStatus(Long userId, String status);
 
     long countByStatus(String status);
 
     long countByVerifiedBy(User verifiedBy);
-    
-    CosmetologistVerification save(CosmetologistVerification cosmetologistVerification);
-    
-    Optional<CosmetologistVerification> findById(Long id);
-    
+
+    CosmetologistVerificationDTO save(CosmetologistVerificationDTO cosmetologistVerificationDTO);
+
+    Optional<CosmetologistVerificationDTO> findById(Long id);
+
     void deleteById(Long id);
-    
-    List<CosmetologistVerification> findAll();
+
+    List<CosmetologistVerificationDTO> findAll();
+
+    CosmetologistVerificationDTO convertToDto(CosmetologistVerification cosmetologistVerification);
+
+    CosmetologistVerification convertToEntity(CosmetologistVerificationDTO cosmetologistVerificationDTO);
 }

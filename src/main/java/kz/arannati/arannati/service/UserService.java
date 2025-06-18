@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.UserDTO;
 import kz.arannati.arannati.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,29 +10,33 @@ import java.util.Optional;
 
 public interface UserService {
 
-    Optional<User> findByEmail(String email);
+    Optional<UserDTO> findByEmail(String email);
 
-    Optional<User> findByEmailAndActiveIsTrue(String email);
+    Optional<UserDTO> findByEmailAndActiveIsTrue(String email);
 
     boolean existsByEmail(String email);
 
-    List<User> findByRoleAndActiveIsTrue(String role);
+    List<UserDTO> findByRoleAndActiveIsTrue(String role);
 
-    List<User> findVerifiedCosmetologists();
+    List<UserDTO> findVerifiedCosmetologists();
 
-    Page<User> findUnverifiedCosmetologists(Pageable pageable);
+    Page<UserDTO> findUnverifiedCosmetologists(Pageable pageable);
 
-    Page<User> searchActiveUsers(String search, Pageable pageable);
+    Page<UserDTO> searchActiveUsers(String search, Pageable pageable);
 
     long countByRoleAndActiveIsTrue(String role);
-    
-    User save(User user);
-    
-    Optional<User> findById(Long id);
-    
+
+    UserDTO save(UserDTO userDTO);
+
+    Optional<UserDTO> findById(Long id);
+
     void deleteById(Long id);
-    
-    List<User> findAll();
-    
-    Page<User> findAll(Pageable pageable);
+
+    List<UserDTO> findAll();
+
+    Page<UserDTO> findAll(Pageable pageable);
+
+    UserDTO convertToDto(User user);
+
+    User convertToEntity(UserDTO userDTO);
 }

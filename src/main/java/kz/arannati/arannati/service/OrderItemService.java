@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.OrderItemDTO;
 import kz.arannati.arannati.entity.OrderItem;
 
 import java.time.LocalDateTime;
@@ -8,19 +9,23 @@ import java.util.Optional;
 
 public interface OrderItemService {
 
-    List<OrderItem> findByOrderId(Long orderId);
+    List<OrderItemDTO> findByOrderId(Long orderId);
 
-    List<OrderItem> findByProductId(Long productId);
+    List<OrderItemDTO> findByProductId(Long productId);
 
     List<Object[]> findPopularProductsByDateRange(LocalDateTime startDate, LocalDateTime endDate);
 
     void deleteByOrderId(Long orderId);
-    
-    OrderItem save(OrderItem orderItem);
-    
-    Optional<OrderItem> findById(Long id);
-    
+
+    OrderItemDTO save(OrderItemDTO orderItemDTO);
+
+    Optional<OrderItemDTO> findById(Long id);
+
     void deleteById(Long id);
-    
-    List<OrderItem> findAll();
+
+    List<OrderItemDTO> findAll();
+
+    OrderItemDTO convertToDto(OrderItem orderItem);
+
+    OrderItem convertToEntity(OrderItemDTO orderItemDTO);
 }

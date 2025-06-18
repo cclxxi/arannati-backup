@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.ProductDTO;
 import kz.arannati.arannati.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,23 +11,23 @@ import java.util.Optional;
 
 public interface ProductService {
 
-    Optional<Product> findByIdAndActiveIsTrue(Long id);
+    Optional<ProductDTO> findByIdAndActiveIsTrue(Long id);
 
-    Optional<Product> findBySkuAndActiveIsTrue(String sku);
+    Optional<ProductDTO> findBySkuAndActiveIsTrue(String sku);
 
-    Page<Product> findByActiveIsTrueOrderBySortOrderAscNameAsc(Pageable pageable);
+    Page<ProductDTO> findByActiveIsTrueOrderBySortOrderAscNameAsc(Pageable pageable);
 
-    Page<Product> findByCategoryIdAndActiveIsTrueOrderBySortOrderAscNameAsc(Long categoryId, Pageable pageable);
+    Page<ProductDTO> findByCategoryIdAndActiveIsTrueOrderBySortOrderAscNameAsc(Long categoryId, Pageable pageable);
 
-    Page<Product> findByBrandIdAndActiveIsTrueOrderBySortOrderAscNameAsc(Long brandId, Pageable pageable);
+    Page<ProductDTO> findByBrandIdAndActiveIsTrueOrderBySortOrderAscNameAsc(Long brandId, Pageable pageable);
 
-    Page<Product> findRegularProducts(Pageable pageable);
+    Page<ProductDTO> findRegularProducts(Pageable pageable);
 
-    Page<Product> findProfessionalProducts(Pageable pageable);
+    Page<ProductDTO> findProfessionalProducts(Pageable pageable);
 
-    Page<Product> searchProducts(String search, Pageable pageable);
+    Page<ProductDTO> searchProducts(String search, Pageable pageable);
 
-    Page<Product> findProductsWithFilters(
+    Page<ProductDTO> findProductsWithFilters(
             Long categoryId,
             Long brandId,
             Boolean isProfessional,
@@ -34,13 +35,13 @@ public interface ProductService {
             BigDecimal maxPrice,
             Pageable pageable);
 
-    Page<Product> findNewProducts(Pageable pageable);
+    Page<ProductDTO> findNewProducts(Pageable pageable);
 
-    Page<Product> findProductsOnSale(Pageable pageable);
+    Page<ProductDTO> findProductsOnSale(Pageable pageable);
 
-    List<Product> findTop8ByActiveIsTrueOrderByCreatedAtDesc();
+    List<ProductDTO> findTop8ByActiveIsTrueOrderByCreatedAtDesc();
 
-    List<Product> findSimilarProducts(Long categoryId, Long excludeId, int limit);
+    List<ProductDTO> findSimilarProducts(Long categoryId, Long excludeId, int limit);
 
     boolean existsBySku(String sku);
 
@@ -49,12 +50,16 @@ public interface ProductService {
     long countByCategoryIdAndActiveIsTrue(Long categoryId);
 
     long countByBrandIdAndActiveIsTrue(Long brandId);
-    
-    Product save(Product product);
-    
-    Optional<Product> findById(Long id);
-    
+
+    ProductDTO save(ProductDTO productDTO);
+
+    Optional<ProductDTO> findById(Long id);
+
     void deleteById(Long id);
-    
-    List<Product> findAll();
+
+    List<ProductDTO> findAll();
+
+    ProductDTO convertToDto(Product product);
+
+    Product convertToEntity(ProductDTO productDTO);
 }

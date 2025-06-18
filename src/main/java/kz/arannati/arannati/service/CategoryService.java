@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.CategoryDTO;
 import kz.arannati.arannati.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,33 +10,37 @@ import java.util.Optional;
 
 public interface CategoryService {
 
-    List<Category> findByParentIdIsNullAndActiveIsTrueOrderBySortOrderAscNameAsc();
+    List<CategoryDTO> findByParentIdIsNullAndActiveIsTrueOrderBySortOrderAscNameAsc();
 
-    List<Category> findByParentIdAndActiveIsTrueOrderBySortOrderAscNameAsc(Long parentId);
+    List<CategoryDTO> findByParentIdAndActiveIsTrueOrderBySortOrderAscNameAsc(Long parentId);
 
-    Optional<Category> findByIdAndActiveIsTrue(Long id);
+    Optional<CategoryDTO> findByIdAndActiveIsTrue(Long id);
 
     boolean existsByName(String name);
 
     boolean existsByNameAndParentId(String name, Long parentId);
 
-    Page<Category> findMainCategories(Pageable pageable);
+    Page<CategoryDTO> findMainCategories(Pageable pageable);
 
-    Page<Category> findSubcategories(Long parentId, Pageable pageable);
+    Page<CategoryDTO> findSubcategories(Long parentId, Pageable pageable);
 
-    List<Category> searchActiveCategories(String search);
+    List<CategoryDTO> searchActiveCategories(String search);
 
     long countByParentIdIsNullAndActiveIsTrue();
 
     long countByParentIdAndActiveIsTrue(Long parentId);
-    
-    Category save(Category category);
-    
-    Optional<Category> findById(Long id);
-    
+
+    CategoryDTO save(CategoryDTO categoryDTO);
+
+    Optional<CategoryDTO> findById(Long id);
+
     void deleteById(Long id);
-    
-    List<Category> findAll();
-    
-    Page<Category> findAll(Pageable pageable);
+
+    List<CategoryDTO> findAll();
+
+    Page<CategoryDTO> findAll(Pageable pageable);
+
+    CategoryDTO convertToDto(Category category);
+
+    Category convertToEntity(CategoryDTO categoryDTO);
 }

@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.NewsDTO;
 import kz.arannati.arannati.entity.News;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,21 +10,21 @@ import java.util.Optional;
 
 public interface NewsService {
 
-    Page<News> findByPublishedIsTrueOrderByPublishedAtDesc(Pageable pageable);
+    Page<NewsDTO> findByPublishedIsTrueOrderByPublishedAtDesc(Pageable pageable);
 
-    Optional<News> findByIdAndPublishedIsTrue(Long id);
+    Optional<NewsDTO> findByIdAndPublishedIsTrue(Long id);
 
-    Optional<News> findBySlugAndPublishedIsTrue(String slug);
+    Optional<NewsDTO> findBySlugAndPublishedIsTrue(String slug);
 
-    List<News> findTop3ByPublishedIsTrueOrderByPublishedAtDesc();
+    List<NewsDTO> findTop3ByPublishedIsTrueOrderByPublishedAtDesc();
 
-    List<News> findByPublishedIsTrueAndFeaturedIsTrueOrderBySortOrderAscPublishedAtDesc();
+    List<NewsDTO> findByPublishedIsTrueAndFeaturedIsTrueOrderBySortOrderAscPublishedAtDesc();
 
-    Page<News> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<NewsDTO> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<News> searchPublishedNews(String search, Pageable pageable);
+    Page<NewsDTO> searchPublishedNews(String search, Pageable pageable);
 
-    Page<News> searchAllNews(String search, Pageable pageable);
+    Page<NewsDTO> searchAllNews(String search, Pageable pageable);
 
     void incrementViewsCount(Long id);
 
@@ -32,12 +33,16 @@ public interface NewsService {
     long countByPublishedIsTrue();
 
     long countByAuthorId(Long authorId);
-    
-    News save(News news);
-    
-    Optional<News> findById(Long id);
-    
+
+    NewsDTO save(NewsDTO newsDTO);
+
+    Optional<NewsDTO> findById(Long id);
+
     void deleteById(Long id);
-    
-    List<News> findAll();
+
+    List<NewsDTO> findAll();
+
+    NewsDTO convertToDto(News news);
+
+    News convertToEntity(NewsDTO newsDTO);
 }

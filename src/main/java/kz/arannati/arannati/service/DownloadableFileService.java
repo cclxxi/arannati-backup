@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.DownloadableFileDTO;
 import kz.arannati.arannati.entity.DownloadableFile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,15 +10,15 @@ import java.util.Optional;
 
 public interface DownloadableFileService {
 
-    Page<DownloadableFile> findByAccessLevelAndActiveIsTrueOrderBySortOrderAscTitleAsc(String accessLevel, Pageable pageable);
+    Page<DownloadableFileDTO> findByAccessLevelAndActiveIsTrueOrderBySortOrderAscTitleAsc(String accessLevel, Pageable pageable);
 
-    List<DownloadableFile> findByAccessLevelAndActiveIsTrueOrderBySortOrderAscTitleAsc(String accessLevel);
+    List<DownloadableFileDTO> findByAccessLevelAndActiveIsTrueOrderBySortOrderAscTitleAsc(String accessLevel);
 
-    Page<DownloadableFile> findByCategoryAndActiveIsTrueOrderBySortOrderAscTitleAsc(String category, Pageable pageable);
+    Page<DownloadableFileDTO> findByCategoryAndActiveIsTrueOrderBySortOrderAscTitleAsc(String category, Pageable pageable);
 
-    List<DownloadableFile> findAccessibleFiles(boolean isCosmetologist);
+    List<DownloadableFileDTO> findAccessibleFiles(boolean isCosmetologist);
 
-    Page<DownloadableFile> searchFiles(String search, Pageable pageable);
+    Page<DownloadableFileDTO> searchFiles(String search, Pageable pageable);
 
     List<String> findDistinctCategories();
 
@@ -26,12 +27,16 @@ public interface DownloadableFileService {
     long countByAccessLevelAndActiveIsTrue(String accessLevel);
 
     long countByCategoryAndActiveIsTrue(String category);
-    
-    DownloadableFile save(DownloadableFile downloadableFile);
-    
-    Optional<DownloadableFile> findById(Long id);
-    
+
+    DownloadableFileDTO save(DownloadableFileDTO downloadableFileDTO);
+
+    Optional<DownloadableFileDTO> findById(Long id);
+
     void deleteById(Long id);
-    
-    List<DownloadableFile> findAll();
+
+    List<DownloadableFileDTO> findAll();
+
+    DownloadableFileDTO convertToDto(DownloadableFile downloadableFile);
+
+    DownloadableFile convertToEntity(DownloadableFileDTO downloadableFileDTO);
 }
