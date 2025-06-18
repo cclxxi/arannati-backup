@@ -1,10 +1,13 @@
 package kz.arannati.arannati.service.impl;
 
+import kz.arannati.arannati.dto.OrderDTO;
 import kz.arannati.arannati.entity.Order;
+import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.repository.OrderRepository;
 import kz.arannati.arannati.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -24,77 +28,188 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<Order> findByOrderNumber(String orderNumber) {
-        return null;
+    public OrderDTO convertToDto(Order order) {
+        if (order == null) {
+            return null;
+        }
+
+        OrderDTO.OrderDTOBuilder builder = OrderDTO.builder()
+                .id(order.getId())
+                .orderNumber(order.getOrderNumber())
+                .status(order.getStatus())
+                .totalAmount(order.getTotalAmount())
+                .discountAmount(order.getDiscountAmount())
+                .shippingAmount(order.getShippingAmount())
+                .taxAmount(order.getTaxAmount())
+                .customerName(order.getCustomerName())
+                .customerEmail(order.getCustomerEmail())
+                .customerPhone(order.getCustomerPhone())
+                .deliveryAddress(order.getDeliveryAddress())
+                .deliveryMethod(order.getDeliveryMethod())
+                .paymentMethod(order.getPaymentMethod())
+                .paymentStatus(order.getPaymentStatus())
+                .notes(order.getNotes())
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt());
+
+        if (order.getUser() != null) {
+            builder.userId(order.getUser().getId());
+        }
+
+        return builder.build();
     }
 
     @Override
-    public Page<Order> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable) {
-        return null;
+    public Order convertToEntity(OrderDTO orderDTO) {
+        if (orderDTO == null) {
+            return null;
+        }
+
+        Order order = new Order();
+        order.setId(orderDTO.getId());
+        order.setOrderNumber(orderDTO.getOrderNumber());
+        order.setStatus(orderDTO.getStatus());
+        order.setTotalAmount(orderDTO.getTotalAmount());
+        order.setDiscountAmount(orderDTO.getDiscountAmount());
+        order.setShippingAmount(orderDTO.getShippingAmount());
+        order.setTaxAmount(orderDTO.getTaxAmount());
+        order.setCustomerName(orderDTO.getCustomerName());
+        order.setCustomerEmail(orderDTO.getCustomerEmail());
+        order.setCustomerPhone(orderDTO.getCustomerPhone());
+        order.setDeliveryAddress(orderDTO.getDeliveryAddress());
+        order.setDeliveryMethod(orderDTO.getDeliveryMethod());
+        order.setPaymentMethod(orderDTO.getPaymentMethod());
+        order.setPaymentStatus(orderDTO.getPaymentStatus());
+        order.setNotes(orderDTO.getNotes());
+        order.setCreatedAt(orderDTO.getCreatedAt());
+        order.setUpdatedAt(orderDTO.getUpdatedAt());
+
+        // User relationship is typically handled separately
+        // as it requires fetching the actual entity from the database
+
+        return order;
     }
 
     @Override
-    public List<Order> findByUserIdOrderByCreatedAtDesc(Long userId) {
-        return null;
+    public Optional<OrderDTO> findByOrderNumber(String orderNumber) {
+        return orderRepository.findByOrderNumber(orderNumber)
+                .map(this::convertToDto);
     }
 
     @Override
-    public Page<Order> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable) {
-        return null;
+    public Page<OrderDTO> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
+        List<OrderDTO> orderDTOs = orderPage.getContent()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(orderDTOs, pageable, orderPage.getTotalElements());
     }
 
     @Override
-    public Page<Order> findAllByOrderByCreatedAtDesc(Pageable pageable) {
-        return null;
+    public List<OrderDTO> findByUserIdOrderByCreatedAtDesc(Long userId) {
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Page<Order> findOrdersWithFilters(String status, Long userId, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
-        return null;
+    public Page<OrderDTO> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findByStatusOrderByCreatedAtDesc(status, pageable);
+        List<OrderDTO> orderDTOs = orderPage.getContent()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(orderDTOs, pageable, orderPage.getTotalElements());
     }
 
     @Override
-    public Page<Order> searchOrders(String search, Pageable pageable) {
-        return null;
+    public Page<OrderDTO> findAllByOrderByCreatedAtDesc(Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findAllByOrderByCreatedAtDesc(pageable);
+        List<OrderDTO> orderDTOs = orderPage.getContent()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(orderDTOs, pageable, orderPage.getTotalElements());
+    }
+
+    @Override
+    public Page<OrderDTO> findOrdersWithFilters(String status, Long userId, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findOrdersWithFilters(status, userId, startDate, endDate, pageable);
+        List<OrderDTO> orderDTOs = orderPage.getContent()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(orderDTOs, pageable, orderPage.getTotalElements());
+    }
+
+    @Override
+    public Page<OrderDTO> searchOrders(String search, Pageable pageable) {
+        Page<Order> orderPage = orderRepository.searchOrders(search, pageable);
+        List<OrderDTO> orderDTOs = orderPage.getContent()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(orderDTOs, pageable, orderPage.getTotalElements());
     }
 
     @Override
     public long countOrdersByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        return 0;
+        return orderRepository.countOrdersByDateRange(startDate, endDate);
     }
 
     @Override
     public BigDecimal getTotalRevenueByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        return null;
+        return orderRepository.getTotalRevenueByDateRange(startDate, endDate);
     }
 
     @Override
     public long countByStatus(String status) {
-        return 0;
+        return orderRepository.countByStatus(status);
     }
 
     @Override
     public long countByUserId(Long userId) {
-        return 0;
+        return orderRepository.countByUserId(userId);
     }
 
     @Override
-    public Order save(Order order) {
-        return null;
+    public OrderDTO save(OrderDTO orderDTO) {
+        Order order = convertToEntity(orderDTO);
+
+        // Handle user relationship if userId is provided
+        if (orderDTO.getUserId() != null) {
+            User user = new User();
+            user.setId(orderDTO.getUserId());
+            order.setUser(user);
+        }
+
+        Order savedOrder = orderRepository.save(order);
+        return convertToDto(savedOrder);
     }
 
     @Override
-    public Optional<Order> findById(Long id) {
-        return null;
+    public Optional<OrderDTO> findById(Long id) {
+        return orderRepository.findById(id)
+                .map(this::convertToDto);
     }
 
     @Override
     public void deleteById(Long id) {
-        
+        orderRepository.deleteById(id);
     }
 
     @Override
-    public List<Order> findAll() {
-        return null;
+    public List<OrderDTO> findAll() {
+        return orderRepository.findAll()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 }
