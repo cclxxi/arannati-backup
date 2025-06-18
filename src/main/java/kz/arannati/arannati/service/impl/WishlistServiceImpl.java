@@ -6,6 +6,7 @@ import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.entity.Wishlist;
 import kz.arannati.arannati.repository.WishlistRepository;
 import kz.arannati.arannati.service.WishlistService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,14 +18,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class WishlistServiceImpl implements WishlistService {
 
     private final WishlistRepository wishlistRepository;
-
-    @Autowired
-    public WishlistServiceImpl(WishlistRepository wishlistRepository) {
-        this.wishlistRepository = wishlistRepository;
-    }
 
     @Override
     public WishlistDTO convertToDto(Wishlist wishlist) {

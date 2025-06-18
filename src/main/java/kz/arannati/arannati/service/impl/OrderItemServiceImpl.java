@@ -6,6 +6,7 @@ import kz.arannati.arannati.entity.OrderItem;
 import kz.arannati.arannati.entity.Product;
 import kz.arannati.arannati.repository.OrderItemRepository;
 import kz.arannati.arannati.service.OrderItemService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +16,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderItemServiceImpl implements OrderItemService {
 
     private final OrderItemRepository orderItemRepository;
-
-    @Autowired
-    public OrderItemServiceImpl(OrderItemRepository orderItemRepository) {
-        this.orderItemRepository = orderItemRepository;
-    }
 
     @Override
     public OrderItemDTO convertToDto(OrderItem orderItem) {

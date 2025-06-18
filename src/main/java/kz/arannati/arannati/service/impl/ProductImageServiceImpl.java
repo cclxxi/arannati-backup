@@ -5,6 +5,7 @@ import kz.arannati.arannati.entity.Product;
 import kz.arannati.arannati.entity.ProductImage;
 import kz.arannati.arannati.repository.ProductImageRepository;
 import kz.arannati.arannati.service.ProductImageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +14,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ProductImageServiceImpl implements ProductImageService {
 
     private final ProductImageRepository productImageRepository;
-
-    @Autowired
-    public ProductImageServiceImpl(ProductImageRepository productImageRepository) {
-        this.productImageRepository = productImageRepository;
-    }
 
     @Override
     public ProductImageDTO convertToDto(ProductImage productImage) {

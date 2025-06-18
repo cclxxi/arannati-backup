@@ -4,6 +4,7 @@ import kz.arannati.arannati.dto.BrandDTO;
 import kz.arannati.arannati.entity.Brand;
 import kz.arannati.arannati.repository.BrandRepository;
 import kz.arannati.arannati.service.BrandService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,15 +16,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BrandServiceImpl implements BrandService {
 
     private final BrandRepository brandRepository;
 
-    @Autowired
-    public BrandServiceImpl(BrandRepository brandRepository) {
-        this.brandRepository = brandRepository;
-    }
-    
     @Override
     public BrandDTO convertToDto(Brand brand) {
         if (brand == null) {

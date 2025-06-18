@@ -5,6 +5,7 @@ import kz.arannati.arannati.entity.DownloadableFile;
 import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.repository.DownloadableFileRepository;
 import kz.arannati.arannati.service.DownloadableFileService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,14 +17,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DownloadableFileServiceImpl implements DownloadableFileService {
 
     private final DownloadableFileRepository downloadableFileRepository;
-
-    @Autowired
-    public DownloadableFileServiceImpl(DownloadableFileRepository downloadableFileRepository) {
-        this.downloadableFileRepository = downloadableFileRepository;
-    }
 
     @Override
     public DownloadableFileDTO convertToDto(DownloadableFile downloadableFile) {

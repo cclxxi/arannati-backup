@@ -6,6 +6,7 @@ import kz.arannati.arannati.entity.Product;
 import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.repository.CartRepository;
 import kz.arannati.arannati.service.CartService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +15,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
-
-    @Autowired
-    public CartServiceImpl(CartRepository cartRepository) {
-        this.cartRepository = cartRepository;
-    }
 
     @Override
     public CartDTO convertToDto(Cart cart) {

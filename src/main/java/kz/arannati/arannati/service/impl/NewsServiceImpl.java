@@ -5,6 +5,7 @@ import kz.arannati.arannati.entity.News;
 import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.repository.NewsRepository;
 import kz.arannati.arannati.service.NewsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,14 +17,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NewsServiceImpl implements NewsService {
 
     private final NewsRepository newsRepository;
-
-    @Autowired
-    public NewsServiceImpl(NewsRepository newsRepository) {
-        this.newsRepository = newsRepository;
-    }
 
     @Override
     public NewsDTO convertToDto(News news) {
