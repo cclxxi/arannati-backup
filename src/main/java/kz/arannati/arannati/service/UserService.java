@@ -1,9 +1,12 @@
 package kz.arannati.arannati.service;
 
 import kz.arannati.arannati.dto.UserDTO;
+import kz.arannati.arannati.dto.auth.CosmetologistRegistrationRequest;
+import kz.arannati.arannati.dto.auth.UserRegistrationRequest;
 import kz.arannati.arannati.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,4 +42,26 @@ public interface UserService {
     UserDTO convertToDto(User user);
 
     User convertToEntity(UserDTO userDTO);
+
+    /**
+     * Creates a new user from registration request
+     * @param request User registration data
+     * @return Created user DTO
+     */
+    UserDTO createUser(UserRegistrationRequest request);
+
+    /**
+     * Creates a new cosmetologist from registration request
+     * @param request Cosmetologist registration data
+     * @param diplomaFile Diploma or certificate file
+     * @return Created user DTO
+     */
+    UserDTO createCosmetologist(CosmetologistRegistrationRequest request, MultipartFile diplomaFile);
+
+    /**
+     * Sends password reset email to user
+     * @param email User email
+     * @return true if email was sent successfully
+     */
+    boolean sendPasswordResetEmail(String email);
 }
