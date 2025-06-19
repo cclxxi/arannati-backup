@@ -6,7 +6,6 @@ import jakarta.validation.constraints.*;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRegistrationRequest {

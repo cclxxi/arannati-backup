@@ -6,7 +6,6 @@ import jakarta.validation.constraints.*;
 
 @Getter
 @Setter
-@Builder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
