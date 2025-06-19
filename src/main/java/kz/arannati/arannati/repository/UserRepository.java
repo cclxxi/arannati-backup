@@ -1,6 +1,5 @@
 package kz.arannati.arannati.repository;
 
-import kz.arannati.arannati.entity.Role;
 import kz.arannati.arannati.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

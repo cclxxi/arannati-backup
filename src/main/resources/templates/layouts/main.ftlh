@@ -29,10 +29,10 @@
 </head>
 <body class="h-full bg-gray-50">
 <!-- Header -->
-<#include "/fragments/header.ftlh">
+<#include "/templates/fragments/header.ftlh">
 
 <!-- Flash Messages -->
-<#include "/fragments/flash-messages.ftlh">
+<#include "/templates/fragments/flash-messages.ftlh">
 
 <!-- Main Content -->
 <main class="flex-1">
@@ -40,7 +40,7 @@
 </main>
 
 <!-- Footer -->
-<#include "/fragments/footer.ftlh">
+<#include "/templates/fragments/footer.ftlh">
 
 <!-- JavaScript Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>

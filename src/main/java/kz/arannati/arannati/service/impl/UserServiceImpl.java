@@ -4,7 +4,6 @@ import kz.arannati.arannati.dto.CosmetologistVerificationDTO;
 import kz.arannati.arannati.dto.UserDTO;
 import kz.arannati.arannati.dto.auth.CosmetologistRegistrationRequest;
 import kz.arannati.arannati.dto.auth.UserRegistrationRequest;
-import kz.arannati.arannati.entity.Role;
 import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.repository.UserRepository;
 import kz.arannati.arannati.service.CosmetologistVerificationService;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
