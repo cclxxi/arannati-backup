@@ -121,20 +121,31 @@
                                     </button>
                                 </div>
                                 <div class="error-message text-red-600 text-sm mt-1 hidden"></div>
+                                <div class="password-strength mt-1">
+                                    <div class="flex space-x-1">
+                                        <div class="strength-bar h-1 w-full bg-gray-200 rounded"></div>
+                                    </div>
+                                    <div class="strength-text text-xs mt-1"></div>
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
                                     Подтверждение пароля *
                                 </label>
-                                <input
-                                        id="confirmPassword"
-                                        name="confirmPassword"
-                                        type="password"
-                                        required
-                                        class="form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        placeholder="Повторите пароль"
-                                        data-validate="required,equalto:#password">
+                                <div class="mt-1 relative">
+                                    <input
+                                            id="confirmPassword"
+                                            name="confirmPassword"
+                                            type="password"
+                                            required
+                                            class="form-control block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            placeholder="Повторите пароль"
+                                            data-validate="required,equalto:#password">
+                                    <button type="button" class="password-toggle absolute inset-y-0 right-0 pr-3 flex items-center">
+                                        <i class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
+                                    </button>
+                                </div>
                                 <div class="error-message text-red-600 text-sm mt-1 hidden"></div>
                             </div>
                         </div>

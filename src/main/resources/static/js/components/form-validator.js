@@ -146,24 +146,17 @@ class FormValidator {
     }
 
     initPasswordField(input) {
-        const strengthContainer = input.parentNode.querySelector('.password-strength');
+        // We'll use the global password toggle functionality from components-init.js
+        // This is just for backward compatibility
+
+        // For password strength, we'll use the parent node's parent node to find the container
+        // since the container is now outside the input's parent div
+        const strengthContainer = input.parentNode.parentNode.querySelector('.password-strength');
 
         if (strengthContainer) {
             input.addEventListener('input', () => {
                 const strength = validator.getPasswordStrength(input.value);
                 this.updatePasswordStrength(strengthContainer, strength);
-            });
-        }
-
-        // Toggle password visibility
-        const toggleBtn = input.parentNode.querySelector('.password-toggle');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
-                const type = input.type === 'password' ? 'text' : 'password';
-                input.type = type;
-
-                const icon = toggleBtn.querySelector('i');
-                icon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
             });
         }
     }

@@ -42,7 +42,7 @@
                             </button>
                             <div class="error-message text-red-600 text-sm mt-1 hidden"></div>
                         </div>
-                        <div class="password-strength mt-1 hidden">
+                        <div class="password-strength mt-1">
                             <div class="flex space-x-1">
                                 <div class="strength-bar h-1 w-full bg-gray-200 rounded"></div>
                             </div>
@@ -64,6 +64,9 @@
                                     class="form-control appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                     placeholder="Повторите пароль"
                                     data-validate="required,equalto:#password">
+                            <button type="button" class="password-toggle absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <i class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
+                            </button>
                             <div class="error-message text-red-600 text-sm mt-1 hidden"></div>
                         </div>
                     </div>

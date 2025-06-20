@@ -29,10 +29,10 @@
 </head>
 <body class="h-full bg-gray-50">
 <!-- Header -->
-<#include "/templates/fragments/header.ftlh">
+<#include "../fragments/header.ftlh">
 
 <!-- Flash Messages -->
-<#include "/templates/fragments/flash-messages.ftlh">
+<#include "../fragments/flash-messages.ftlh">
 
 <!-- Main Content -->
 <main class="flex-1">
@@ -40,7 +40,7 @@
 </main>
 
 <!-- Footer -->
-<#include "/templates/fragments/footer.ftlh">
+<#include "../fragments/footer.ftlh">
 
 <!-- JavaScript Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
@@ -54,6 +54,7 @@
 <script src="/static/js/components/file-uploader.js"></script>
 <script src="/static/js/components/toast-notifications.js"></script>
 <script src="/static/js/main.js"></script>
+<script src="/static/js/components-init.js"></script>
 
 <!-- Page-specific JavaScript -->
 <#if additionalJS??>
