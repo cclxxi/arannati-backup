@@ -216,6 +216,42 @@ class FormValidator {
         if (errorElement) {
             errorElement.classList.add('hidden');
         }
+
+        // Очищаем общую ошибку формы при изменении любого поля
+        const formErrorContainer = this.form.querySelector('.form-error-message');
+        if (formErrorContainer) {
+            formErrorContainer.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Отображение ошибок API в форме
+     * @param {ApiError} error - Объект ошибки API
+     */
+    displayApiErrors(error) {
+        // Очищаем предыдущие ошибки
+        Array.from(this.fields.keys()).forEach(input => this.clearFieldError(input));
+
+        // Показываем общую ошибку
+        const errorContainer = this.form.querySelector('.form-error-message');
+        if (errorContainer) {
+            errorContainer.textContent = error.message || 'Произошла ошибка';
+            errorContainer.classList.remove('hidden');
+        }
+
+        // Если есть ошибки валидации, отображаем их в соответствующих полях
+        if (error.errors && error.errors.length > 0) {
+            error.errors.forEach(err => {
+                const input = this.form.querySelector(`[name="${err.field}"]`);
+                if (input) {
+                    const fieldData = this.fields.get(input);
+                    if (fieldData) {
+                        fieldData.isValid = false;
+                        this.updateFieldUI(input, false, err.message);
+                    }
+                }
+            });
+        }
     }
 
     async handleSubmit(e) {
@@ -237,8 +273,22 @@ class FormValidator {
                 submitBtn.disabled = true;
             }
 
-            // Отправляем форму
-            this.form.submit();
+            // Проверяем, есть ли обработчик отправки формы через AJAX
+            const ajaxSubmit = this.form.getAttribute('data-ajax-submit');
+            if (ajaxSubmit === 'true') {
+                try {
+                    await this.submitFormAjax();
+                } catch (error) {
+                    // Восстанавливаем состояние кнопки
+                    if (submitBtn) {
+                        submitBtn.classList.remove('loading');
+                        submitBtn.disabled = false;
+                    }
+                }
+            } else {
+                // Отправляем форму стандартным способом
+                this.form.submit();
+            }
         } else {
             // Фокусируемся на первом невалидном поле
             const firstInvalidField = Array.from(this.fields.keys()).find(input =>
@@ -247,6 +297,127 @@ class FormValidator {
             if (firstInvalidField) {
                 firstInvalidField.focus();
             }
+        }
+    }
+
+    /**
+     * Отправка формы через AJAX
+     */
+    async submitFormAjax() {
+        const formData = new FormData(this.form);
+        const url = this.form.getAttribute('action') || window.location.href;
+        const method = this.form.getAttribute('method')?.toUpperCase() || 'POST';
+
+        try {
+            // Отключаем автоматические тосты, так как будем обрабатывать ошибки вручную
+            api.disableErrorToasts();
+
+            let response;
+            if (formData.has('file') || this.form.enctype === 'multipart/form-data') {
+                // Если форма содержит файлы, используем uploadFile
+                response = await api.uploadFile(url, formData);
+            } else {
+                // Иначе преобразуем FormData в объект
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+
+                if (method === 'POST') {
+                    response = await api.post(url, data);
+                } else if (method === 'PUT') {
+                    response = await api.put(url, data);
+                } else {
+                    response = await api.get(url, data);
+                }
+            }
+
+            // Успешная отправка
+            this.handleSuccessResponse(response);
+            return response;
+
+        } catch (error) {
+            // Обработка ошибок
+            this.handleErrorResponse(error);
+            throw error;
+        } finally {
+            // Включаем автоматические тосты обратно
+            api.enableErrorToasts();
+        }
+    }
+
+    /**
+     * Обработка успешного ответа от сервера
+     */
+    handleSuccessResponse(response) {
+        // Показываем сообщение об успехе, если указано
+        const successMessage = this.form.getAttribute('data-success-message');
+        if (successMessage && window.toastNotifications) {
+            window.toastNotifications.success(successMessage);
+        }
+
+        // Перенаправляем, если указан URL
+        const redirectUrl = this.form.getAttribute('data-redirect');
+        if (redirectUrl) {
+            window.location.href = redirectUrl;
+            return;
+        }
+
+        // Очищаем форму, если указано
+        const resetForm = this.form.getAttribute('data-reset-on-success');
+        if (resetForm === 'true') {
+            this.form.reset();
+
+            // Сбрасываем состояние валидации
+            Array.from(this.fields.keys()).forEach(input => {
+                input.classList.remove('is-valid', 'is-invalid');
+                const errorElement = input.parentNode.querySelector('.error-message');
+                if (errorElement) {
+                    errorElement.classList.add('hidden');
+                }
+            });
+        }
+
+        // Восстанавливаем состояние кнопки отправки
+        const submitBtn = this.form.querySelector('[type="submit"]');
+        if (submitBtn) {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+        }
+    }
+
+    /**
+     * Обработка ошибки от сервера
+     */
+    handleErrorResponse(error) {
+        // Показываем общую ошибку
+        const errorContainer = this.form.querySelector('.form-error-message');
+        if (errorContainer) {
+            errorContainer.textContent = error.message || 'Произошла ошибка при отправке формы';
+            errorContainer.classList.remove('hidden');
+        }
+
+        // Если это ошибка API с валидационными ошибками
+        if (error instanceof ApiError && error.errors && error.errors.length > 0) {
+            // Отображаем ошибки валидации в соответствующих полях
+            error.errors.forEach(err => {
+                const input = this.form.querySelector(`[name="${err.field}"]`);
+                if (input) {
+                    input.classList.add('is-invalid');
+                    const errorElement = input.parentNode.querySelector('.error-message');
+                    if (errorElement) {
+                        errorElement.textContent = err.message;
+                        errorElement.classList.remove('hidden');
+                    }
+                }
+            });
+        }
+
+        // Восстанавливаем состояние кнопки отправки
+        const submitBtn = this.form.querySelector('[type="submit"]');
+        if (submitBtn) {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
         }
     }
 

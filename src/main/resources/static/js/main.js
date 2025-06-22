@@ -55,11 +55,15 @@ function initSearchComponent() {
 }
 
 async function performSearch(query, inputElement) {
-    try {
-        const results = await api.get('/api/search', { q: query });
-        showSearchResults(results, inputElement);
-    } catch (error) {
+    const { success, data, error } = await errorHandler.safeAsync(async () => {
+        return await api.get('/api/search', { q: query });
+    }, false); // Не показываем тост с ошибкой при поиске
+
+    if (success) {
+        showSearchResults(data, inputElement);
+    } else {
         console.error('Search failed:', error);
+        showSearchResults([], inputElement); // Показываем пустой результат
     }
 }
 
@@ -112,14 +116,17 @@ function initCartCounter() {
 }
 
 async function updateCartCounter() {
-    try {
-        const cartData = await api.get('/api/cart/count');
+    const { success, data, error } = await errorHandler.safeAsync(async () => {
+        return await api.get('/api/cart/count');
+    }, false); // Не показываем тост с ошибкой при обновлении счетчика
+
+    if (success) {
         const counter = document.querySelector('.cart-counter');
-        if (counter && cartData.count !== undefined) {
-            counter.textContent = cartData.count;
-            counter.style.display = cartData.count > 0 ? 'flex' : 'none';
+        if (counter && data.count !== undefined) {
+            counter.textContent = data.count;
+            counter.style.display = data.count > 0 ? 'flex' : 'none';
         }
-    } catch (error) {
+    } else {
         console.error('Failed to update cart counter:', error);
     }
 }

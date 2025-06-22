@@ -3,6 +3,79 @@ class ApiClient {
         this.baseUrl = AppConfig.apiBaseUrl;
         this.csrfToken = AppConfig.csrfToken;
         this.csrfHeader = AppConfig.csrfHeader;
+        this.showErrorToasts = true; // Флаг для отображения ошибок в виде тостов
+    }
+
+    /**
+     * Обработка ошибок API
+     * @param {Response} response - Ответ от сервера
+     * @param {Error} error - Объект ошибки (опционально)
+     * @returns {Promise<Object>} - Объект с информацией об ошибке
+     */
+    async handleError(response, error = null) {
+        let errorData = {
+            status: response?.status || 500,
+            message: error?.message || 'Неизвестная ошибка',
+            errors: []
+        };
+
+        // Пытаемся получить детали ошибки из ответа
+        if (response) {
+            try {
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const data = await response.json();
+                    errorData.message = data.message || errorData.message;
+                    errorData.errors = data.errors || [];
+                }
+            } catch (e) {
+                console.error('Ошибка при парсинге ответа:', e);
+            }
+        }
+
+        // Формируем понятное сообщение об ошибке в зависимости от статуса
+        if (!errorData.message || errorData.message.includes('HTTP')) {
+            switch (errorData.status) {
+                case 400:
+                    errorData.message = 'Неверный запрос';
+                    break;
+                case 401:
+                    errorData.message = 'Требуется авторизация';
+                    break;
+                case 403:
+                    errorData.message = 'Доступ запрещен';
+                    break;
+                case 404:
+                    errorData.message = 'Ресурс не найден';
+                    break;
+                case 409:
+                    errorData.message = 'Конфликт данных';
+                    break;
+                case 422:
+                    errorData.message = 'Ошибка валидации';
+                    break;
+                case 500:
+                    errorData.message = 'Внутренняя ошибка сервера';
+                    break;
+                default:
+                    errorData.message = `Ошибка ${errorData.status}`;
+            }
+        }
+
+        // Показываем уведомление об ошибке, если включено
+        if (this.showErrorToasts && window.toastNotifications) {
+            window.toastNotifications.error(errorData.message);
+
+            // Если есть ошибки валидации, показываем их тоже
+            if (errorData.errors && errorData.errors.length > 0) {
+                errorData.errors.forEach(err => {
+                    window.toastNotifications.error(`${err.field}: ${err.message}`);
+                });
+            }
+        }
+
+        console.error('API Error:', errorData);
+        return errorData;
     }
 
     // Базовый метод для запросов
@@ -26,7 +99,8 @@ class ApiClient {
             const response = await fetch(url, config);
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const errorData = await this.handleError(response);
+                throw new ApiError(errorData.message, errorData.status, errorData.errors);
             }
 
             const contentType = response.headers.get('content-type');
@@ -36,8 +110,13 @@ class ApiClient {
 
             return await response.text();
         } catch (error) {
-            console.error('API Request failed:', error);
-            throw error;
+            if (error instanceof ApiError) {
+                throw error;
+            } else {
+                console.error('API Request failed:', error);
+                const errorData = await this.handleError(null, error);
+                throw new ApiError(errorData.message, errorData.status);
+            }
         }
     }
 
@@ -98,7 +177,38 @@ class ApiClient {
             return { success: false, error: error.message };
         }
     }
+
+    /**
+     * Отключить автоматическое отображение ошибок в виде тостов
+     */
+    disableErrorToasts() {
+        this.showErrorToasts = false;
+        return this;
+    }
+
+    /**
+     * Включить автоматическое отображение ошибок в виде тостов
+     */
+    enableErrorToasts() {
+        this.showErrorToasts = true;
+        return this;
+    }
+}
+
+/**
+ * Класс для ошибок API
+ */
+class ApiError extends Error {
+    constructor(message, status = 500, errors = []) {
+        super(message);
+        this.name = 'ApiError';
+        this.status = status;
+        this.errors = errors;
+    }
 }
 
 // Глобальный экземпляр API клиента
 window.api = new ApiClient();
+
+// Экспортируем класс ошибки для использования в других модулях
+window.ApiError = ApiError;

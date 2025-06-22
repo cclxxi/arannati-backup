@@ -49,10 +49,11 @@
 <!-- Custom JavaScript -->
 <script src="/static/js/utils/config.js"></script>
 <script src="/static/js/utils/validator.js"></script>
+<script src="/static/js/components/toast-notifications.js"></script>
+<script src="/static/js/utils/error-handler.js"></script>
 <script src="/static/js/utils/api.js"></script>
 <script src="/static/js/components/form-validator.js"></script>
 <script src="/static/js/components/file-uploader.js"></script>
-<script src="/static/js/components/toast-notifications.js"></script>
 <script src="/static/js/main.js"></script>
 <script src="/static/js/components-init.js"></script>
 
