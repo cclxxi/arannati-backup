@@ -1,0 +1,137 @@
+package kz.arannati.arannati.controller;
+
+import kz.arannati.arannati.dto.OrderDTO;
+import kz.arannati.arannati.dto.UserDTO;
+import kz.arannati.arannati.service.OrderService;
+import kz.arannati.arannati.service.UserService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Controller for handling dashboard functionality
+ */
+@Slf4j
+@Controller
+@RequestMapping("/dashboard")
+@RequiredArgsConstructor
+public class DashboardController {
+
+    private final UserService userService;
+    private final OrderService orderService;
+
+    /**
+     * Main dashboard page for authenticated users
+     */
+    @GetMapping
+    public String dashboard(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // If user is not authenticated, show guest dashboard
+        if (authentication == null || !authentication.isAuthenticated() || 
+            "anonymousUser".equals(authentication.getPrincipal())) {
+            return "dashboard/guest";
+        }
+
+        // Get authenticated user
+        String email = authentication.getName();
+        Optional<UserDTO> userOpt = userService.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            log.error("Authenticated user not found in database: {}", email);
+            return "redirect:/auth/login";
+        }
+
+        UserDTO user = userOpt.get();
+
+        // Add user data to model
+        model.addAttribute("user", user);
+
+        // Add order history to model
+        List<OrderDTO> orders = orderService.findByUserIdOrderByCreatedAtDesc(user.getId());
+        model.addAttribute("orders", orders);
+
+        // Determine which dashboard to show based on user role
+        String roleName = user.getRole();
+        if ("ADMIN".equals(roleName)) {
+            return "dashboard/admin";
+        } else if ("COSMETOLOGIST".equals(roleName)) {
+            return "dashboard/cosmetologist";
+        } else {
+            return "dashboard/user";
+        }
+    }
+
+    /**
+     * Profile page for authenticated users
+     */
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // If user is not authenticated, redirect to login
+        if (authentication == null || !authentication.isAuthenticated() || 
+            "anonymousUser".equals(authentication.getPrincipal())) {
+            return "redirect:/auth/login";
+        }
+
+        // Get authenticated user
+        String email = authentication.getName();
+        Optional<UserDTO> userOpt = userService.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            log.error("Authenticated user not found in database: {}", email);
+            return "redirect:/auth/login";
+        }
+
+        UserDTO user = userOpt.get();
+
+        // Add user data to model
+        model.addAttribute("user", user);
+
+        return "dashboard/profile";
+    }
+
+    /**
+     * Order history page for authenticated users
+     */
+    @GetMapping("/orders")
+    public String orders(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // If user is not authenticated, redirect to login
+        if (authentication == null || !authentication.isAuthenticated() || 
+            "anonymousUser".equals(authentication.getPrincipal())) {
+            return "redirect:/auth/login";
+        }
+
+        // Get authenticated user
+        String email = authentication.getName();
+        Optional<UserDTO> userOpt = userService.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            log.error("Authenticated user not found in database: {}", email);
+            return "redirect:/auth/login";
+        }
+
+        UserDTO user = userOpt.get();
+
+        // Add user data to model
+        model.addAttribute("user", user);
+
+        // Add order history to model
+        List<OrderDTO> orders = orderService.findByUserIdOrderByCreatedAtDesc(user.getId());
+        model.addAttribute("orders", orders);
+
+        return "dashboard/orders";
+    }
+}
