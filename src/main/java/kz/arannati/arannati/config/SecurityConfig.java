@@ -25,8 +25,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/admin-creation") // Отключаем CSRF для маршрута создания админа
+                )
+                .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/admin-creation").permitAll() // Temporary endpoint for admin creation
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/static/**").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
