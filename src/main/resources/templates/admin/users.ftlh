@@ -8,7 +8,7 @@
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between mb-4">
                 <h1 class="text-2xl font-bold text-gray-800">Управление пользователями</h1>
-                <a href="/admin" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                <a href="/dashboard" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
                     <i class="fas fa-arrow-left mr-2"></i> Назад к панели
                 </a>
             </div>
