@@ -2,6 +2,7 @@ package kz.arannati.arannati.controller;
 
 import kz.arannati.arannati.dto.OrderDTO;
 import kz.arannati.arannati.dto.UserDTO;
+import kz.arannati.arannati.service.MessageService;
 import kz.arannati.arannati.service.OrderService;
 import kz.arannati.arannati.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class DashboardController {
 
     private final UserService userService;
     private final OrderService orderService;
+    private final MessageService messageService;
 
     /**
      * Main dashboard page for authenticated users
@@ -63,6 +65,10 @@ public class DashboardController {
         // Determine which dashboard to show based on user role
         String roleName = user.getRole();
         if ("ADMIN".equals(roleName)) {
+            // Add unread message count for admin
+            long unreadMessageCount = messageService.countUnreadByRecipientId(user.getId());
+            model.addAttribute("unreadMessageCount", unreadMessageCount);
+
             return "dashboard/admin";
         } else if ("COSMETOLOGIST".equals(roleName)) {
             return "dashboard/cosmetologist";

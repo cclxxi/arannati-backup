@@ -64,4 +64,42 @@ public interface UserService {
      * @return true if email was sent successfully
      */
     boolean sendPasswordResetEmail(String email);
+
+    /**
+     * Toggle user active status (ban/unban)
+     * @param id User ID
+     * @return true if status was updated successfully
+     */
+    boolean toggleActive(Long id);
+
+    /**
+     * Approve cosmetologist
+     * @param id User ID
+     * @return true if cosmetologist was approved successfully
+     */
+    boolean approveCosmetologist(Long id);
+
+    /**
+     * Decline cosmetologist
+     * @param id User ID
+     * @param reason Reason for declining
+     * @return true if cosmetologist was declined successfully
+     */
+    boolean declineCosmetologist(Long id, String reason);
+
+    /**
+     * Find cosmetologists waiting for approval
+     * @return List of pending cosmetologists
+     */
+    List<UserDTO> findPendingCosmetologists();
+
+    /**
+     * Creates a new admin user
+     * @param email Admin email
+     * @param firstName Admin first name
+     * @param lastName Admin last name
+     * @param password Admin password
+     * @return Created admin user DTO
+     */
+    UserDTO createAdmin(String email, String firstName, String lastName, String password);
 }

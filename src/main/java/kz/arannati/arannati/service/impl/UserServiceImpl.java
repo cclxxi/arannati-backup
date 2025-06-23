@@ -8,6 +8,7 @@ import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.repository.UserRepository;
 import kz.arannati.arannati.service.CosmetologistVerificationService;
 import kz.arannati.arannati.service.FileStorageService;
+import kz.arannati.arannati.service.MessageFacadeService;
 import kz.arannati.arannati.service.RoleService;
 import kz.arannati.arannati.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final FileStorageService fileStorageService;
     private final CosmetologistVerificationService cosmetologistVerificationService;
+    private final MessageFacadeService messageFacadeService;
 
     @Override
     public UserDTO convertToDto(User user) {
@@ -284,5 +286,133 @@ public class UserServiceImpl implements UserService {
         // https://example.com/auth/reset-password?token=someToken
 
         return true;
+    }
+
+    @Override
+    public boolean toggleActive(Long id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) {
+            log.warn("Toggle active status requested for non-existent user ID: {}", id);
+            return false;
+        }
+
+        User user = userOptional.get();
+        user.setActive(!user.isActive());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+        log.info("User {} active status toggled to: {}", user.getEmail(), user.isActive());
+
+        return true;
+    }
+
+    @Override
+    public boolean approveCosmetologist(Long id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) {
+            log.warn("Approve cosmetologist requested for non-existent user ID: {}", id);
+            return false;
+        }
+
+        User user = userOptional.get();
+
+        // Check if user is a cosmetologist
+        if (!"COSMETOLOGIST".equals(user.getRole().getName())) {
+            log.warn("Approve cosmetologist requested for non-cosmetologist user: {}", user.getEmail());
+            return false;
+        }
+
+        user.setVerified(true);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+
+        // Update verification status
+        Optional<CosmetologistVerificationDTO> verificationOpt = cosmetologistVerificationService.findByUserId(id);
+        if (verificationOpt.isPresent()) {
+            CosmetologistVerificationDTO verification = verificationOpt.get();
+            verification.setStatus("APPROVED");
+            cosmetologistVerificationService.save(verification);
+        }
+
+        log.info("Cosmetologist {} approved", user.getEmail());
+
+        return true;
+    }
+
+    @Override
+    public boolean declineCosmetologist(Long id, String reason) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) {
+            log.warn("Decline cosmetologist requested for non-existent user ID: {}", id);
+            return false;
+        }
+
+        User user = userOptional.get();
+
+        // Check if user is a cosmetologist
+        if (!"COSMETOLOGIST".equals(user.getRole().getName())) {
+            log.warn("Decline cosmetologist requested for non-cosmetologist user: {}", user.getEmail());
+            return false;
+        }
+
+        // Update verification status
+        Optional<CosmetologistVerificationDTO> verificationOpt = cosmetologistVerificationService.findByUserId(id);
+        if (verificationOpt.isPresent()) {
+            CosmetologistVerificationDTO verification = verificationOpt.get();
+            verification.setStatus("DECLINED");
+            cosmetologistVerificationService.save(verification);
+        }
+
+        // Get admin user (assuming admin ID is 1 for now, in a real app we would get the current admin user)
+        Optional<User> adminOpt = userRepository.findById(1L);
+        if (adminOpt.isPresent()) {
+            // Send message to cosmetologist with the reason for declining
+            String messageContent = "Your cosmetologist application has been declined. Reason: " + reason;
+
+            // Create and send the message
+            messageFacadeService.sendMessage(adminOpt.get().getId(), user.getId(), messageContent);
+
+            log.info("Rejection message sent to cosmetologist {}", user.getEmail());
+        } else {
+            log.warn("Admin user not found, could not send rejection message to cosmetologist {}", user.getEmail());
+        }
+
+        log.info("Cosmetologist {} declined with reason: {}", user.getEmail(), reason);
+
+        return true;
+    }
+
+    @Override
+    public List<UserDTO> findPendingCosmetologists() {
+        Page<User> userPage = userRepository.findUnverifiedCosmetologists(Pageable.unpaged());
+        return userPage.getContent()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDTO createAdmin(String email, String firstName, String lastName, String password) {
+        // Check if user already exists
+        if (existsByEmail(email)) {
+            throw new IllegalArgumentException("User with this email already exists");
+        }
+
+        // Create new admin user
+        User user = new User();
+        user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole(roleService.getOrCreateRole("ADMIN"));
+        user.setActive(true);
+        user.setVerified(true); // Admins are automatically verified
+        user.setCreatedAt(LocalDateTime.now());
+
+        User savedUser = userRepository.save(user);
+        log.info("Created new admin user: {}", savedUser.getEmail());
+
+        return convertToDto(savedUser);
     }
 }

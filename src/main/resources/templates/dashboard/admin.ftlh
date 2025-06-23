@@ -12,7 +12,7 @@
                     Администратор
                 </span>
             </div>
-            
+
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
                 <div class="flex">
                     <div class="flex-shrink-0">
@@ -27,7 +27,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Stats Overview -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <!-- Users Stat -->
@@ -38,12 +38,12 @@
                         <i class="fas fa-users text-blue-600"></i>
                     </div>
                 </div>
-                
+
                 <div class="text-3xl font-bold text-gray-800 mb-1">
-                    128
+                    ${users?size}
                 </div>
                 <p class="text-sm text-gray-600">Всего пользователей</p>
-                
+
                 <div class="mt-4 pt-4 border-t">
                     <a href="/admin/users" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
                         Управление пользователями
@@ -51,7 +51,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <!-- Orders Stat -->
             <div class="bg-white shadow-md rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -60,12 +60,12 @@
                         <i class="fas fa-shopping-cart text-green-600"></i>
                     </div>
                 </div>
-                
+
                 <div class="text-3xl font-bold text-gray-800 mb-1">
                     ${orders?size}
                 </div>
                 <p class="text-sm text-gray-600">Всего заказов</p>
-                
+
                 <div class="mt-4 pt-4 border-t">
                     <a href="/admin/orders" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
                         Управление заказами
@@ -73,7 +73,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <!-- Products Stat -->
             <div class="bg-white shadow-md rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -82,12 +82,12 @@
                         <i class="fas fa-box text-purple-600"></i>
                     </div>
                 </div>
-                
+
                 <div class="text-3xl font-bold text-gray-800 mb-1">
                     256
                 </div>
                 <p class="text-sm text-gray-600">Всего товаров</p>
-                
+
                 <div class="mt-4 pt-4 border-t">
                     <a href="/admin/products" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
                         Управление товарами
@@ -95,7 +95,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <!-- Revenue Stat -->
             <div class="bg-white shadow-md rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -104,12 +104,12 @@
                         <i class="fas fa-money-bill-wave text-yellow-600"></i>
                     </div>
                 </div>
-                
+
                 <div class="text-3xl font-bold text-gray-800 mb-1">
                     1,250,000 ₸
                 </div>
                 <p class="text-sm text-gray-600">Общий доход</p>
-                
+
                 <div class="mt-4 pt-4 border-t">
                     <a href="/admin/reports" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
                         Финансовые отчеты
@@ -118,12 +118,12 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Quick Actions -->
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 class="text-lg font-semibold text-gray-800 mb-4">Быстрые действия</h2>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
                 <a href="/admin/products/create" class="border rounded-lg p-4 hover:bg-gray-50 transition-colors flex items-center">
                     <div class="bg-blue-100 p-2 rounded-full mr-3">
                         <i class="fas fa-plus text-blue-600"></i>
@@ -133,7 +133,7 @@
                         <p class="text-xs text-gray-500">Создать новый товар</p>
                     </div>
                 </a>
-                
+
                 <a href="/admin/cosmetologists/verify" class="border rounded-lg p-4 hover:bg-gray-50 transition-colors flex items-center">
                     <div class="bg-green-100 p-2 rounded-full mr-3">
                         <i class="fas fa-check text-green-600"></i>
@@ -143,7 +143,7 @@
                         <p class="text-xs text-gray-500">Проверить косметологов</p>
                     </div>
                 </a>
-                
+
                 <a href="/admin/orders/pending" class="border rounded-lg p-4 hover:bg-gray-50 transition-colors flex items-center">
                     <div class="bg-yellow-100 p-2 rounded-full mr-3">
                         <i class="fas fa-clock text-yellow-600"></i>
@@ -153,7 +153,7 @@
                         <p class="text-xs text-gray-500">Обработать заказы</p>
                     </div>
                 </a>
-                
+
                 <a href="/admin/materials/upload" class="border rounded-lg p-4 hover:bg-gray-50 transition-colors flex items-center">
                     <div class="bg-purple-100 p-2 rounded-full mr-3">
                         <i class="fas fa-upload text-purple-600"></i>
@@ -163,9 +163,30 @@
                         <p class="text-xs text-gray-500">Добавить материалы</p>
                     </div>
                 </a>
+
+                <a href="/admin/messages" class="border rounded-lg p-4 hover:bg-gray-50 transition-colors flex items-center">
+                    <div class="bg-red-100 p-2 rounded-full mr-3 relative">
+                        <i class="fas fa-envelope text-red-600"></i>
+                        <#if unreadMessageCount?? && unreadMessageCount gt 0>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                ${unreadMessageCount}
+                            </span>
+                        </#if>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-800">Сообщения</h3>
+                        <p class="text-xs text-gray-500">
+                            <#if unreadMessageCount?? && unreadMessageCount gt 0>
+                                ${unreadMessageCount} новых
+                            <#else>
+                                Управление сообщениями
+                            </#if>
+                        </p>
+                    </div>
+                </a>
             </div>
         </div>
-        
+
         <!-- Pending Verifications -->
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between mb-4">
@@ -174,7 +195,7 @@
                     Все заявки
                 </a>
             </div>
-            
+
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -268,7 +289,7 @@
                 </table>
             </div>
         </div>
-        
+
         <!-- Recent Orders -->
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between mb-4">
@@ -277,7 +298,7 @@
                     Все заказы
                 </a>
             </div>
-            
+
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
