@@ -31,13 +31,20 @@ public class SecurityConfig {
                 .requestMatchers("/static/**").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/error").permitAll()
+                .requestMatchers("/").permitAll() // Allow access to catalog (root page) for all users
+                .requestMatchers("/product/**").permitAll() // Allow access to product details for all users
+                .requestMatchers("/dashboard").permitAll() // Allow access to main dashboard for all users
+                .requestMatchers("/dashboard/admin/**").hasRole("ADMIN") // Only ADMIN can access admin dashboard
+                .requestMatchers("/admin/**").hasRole("ADMIN") // Only ADMIN can access admin pages
+                .requestMatchers("/materials/**").hasAnyRole("COSMETOLOGIST", "ADMIN") // Only COSMETOLOGIST and ADMIN can access materials
+                .requestMatchers("/special-offers/**").hasAnyRole("COSMETOLOGIST", "ADMIN") // Only COSMETOLOGIST and ADMIN can access special offers
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/auth/login")
                 .loginProcessingUrl("/auth/login")
                 .usernameParameter("email")
-                .defaultSuccessUrl("/", true)
+                .defaultSuccessUrl("/dashboard", true)
                 .failureUrl("/auth/login?error")
                 .permitAll()
             )
@@ -55,4 +62,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
