@@ -121,11 +121,11 @@
                                     </#if>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <#if user.role == "COSMETOLOGIST" && !user.isVerified>
+                                    <#if user.role == "COSMETOLOGIST" && !user.verified>
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
                                             Ожидает подтверждения
                                         </span>
-                                    <#elseif user.isActive>
+                                    <#elseif user.active>
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                             Активен
                                         </span>
@@ -140,7 +140,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <#if user.role != "ADMIN" || (user.role == "ADMIN" && user.id != currentUserId)>
-                                        <#if user.isActive>
+                                        <#if user.active>
                                             <button class="toggle-active-btn bg-red-100 text-red-800 px-3 py-1 rounded-full mr-2 hover:bg-red-200" data-id="${user.id}" data-active="true">
                                                 <i class="fas fa-ban mr-1"></i> Заблокировать
                                             </button>
@@ -151,7 +151,7 @@
                                         </#if>
                                     </#if>
 
-                                    <#if user.role == "COSMETOLOGIST" && !user.isVerified>
+                                    <#if user.role == "COSMETOLOGIST" && !user.verified>
                                         <button class="approve-cosmetologist-btn bg-green-100 text-green-800 px-3 py-1 rounded-full mr-2 hover:bg-green-200" data-id="${user.id}">
                                             <i class="fas fa-check mr-1"></i> Подтвердить
                                         </button>
