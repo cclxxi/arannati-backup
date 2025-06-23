@@ -69,6 +69,10 @@ public class DashboardController {
             long unreadMessageCount = messageService.countUnreadByRecipientId(user.getId());
             model.addAttribute("unreadMessageCount", unreadMessageCount);
 
+            // Add users list for admin dashboard
+            List<UserDTO> users = userService.findAll();
+            model.addAttribute("users", users);
+
             return "dashboard/admin";
         } else if ("COSMETOLOGIST".equals(roleName)) {
             return "dashboard/cosmetologist";
