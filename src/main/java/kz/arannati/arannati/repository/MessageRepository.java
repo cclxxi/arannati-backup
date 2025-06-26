@@ -44,13 +44,13 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     /**
      * Получает непрочитанные сообщения в чате для конкретного пользователя
      */
-    @Query("SELECT m FROM Message m WHERE m.chatId = :chatId AND m.recipient.id = :userId AND m.isRead = false")
+    @Query("SELECT m FROM Message m WHERE m.chatId = :chatId AND m.recipient.id = :userId AND m.read = false")
     List<Message> findUnreadInChat(@Param("chatId") String chatId, @Param("userId") Long userId);
 
     /**
      * Подсчитывает непрочитанные сообщения для пользователя
      */
-    @Query("SELECT COUNT(m) FROM Message m WHERE m.recipient.id = :userId AND m.isRead = false")
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.recipient.id = :userId AND m.read = false")
     long countUnreadByRecipientId(@Param("userId") Long userId);
 
     /**
@@ -69,10 +69,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
      * Находит связанные рассылки по отправителю, контенту и времени создания
      */
     @Query("SELECT m FROM Message m WHERE m.sender.id = :senderId AND m.content = :content " +
-            "AND m.isBroadcast = true AND ABS(TIMESTAMPDIFF(SECOND, m.createdAt, :createdAt)) < 5")
+            "AND m.isBroadcast = true AND m.createdAt BETWEEN :startTime AND :endTime")
     List<Message> findRelatedBroadcasts(@Param("senderId") Long senderId,
                                         @Param("content") String content,
-                                        @Param("createdAt") LocalDateTime createdAt);
+                                        @Param("startTime") LocalDateTime startTime,
+                                        @Param("endTime") LocalDateTime endTime);
 
     /**
      * Получает последние сообщения в каждом чате пользователя

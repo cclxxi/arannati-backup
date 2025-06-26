@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -297,10 +298,16 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(() -> new RuntimeException("Original message not found"));
 
         // Находим все сообщения-рассылки с тем же содержимым и отправителем
+        // Создаем временное окно в 5 секунд до и после создания оригинального сообщения
+        LocalDateTime createdAt = originalMessage.getCreatedAt();
+        LocalDateTime startTime = createdAt.minusSeconds(5);
+        LocalDateTime endTime = createdAt.plusSeconds(5);
+
         List<Message> relatedBroadcasts = messageRepository.findRelatedBroadcasts(
                 originalMessage.getSender().getId(),
                 originalMessage.getContent(),
-                originalMessage.getCreatedAt()
+                startTime,
+                endTime
         );
 
         // Удаляем рассылки у других админов
@@ -321,9 +328,11 @@ public class ChatServiceImpl implements ChatService {
                 .senderId(message.getSender().getId())
                 .senderName(message.getSender().getFirstName() + " " + message.getSender().getLastName())
                 .senderEmail(message.getSender().getEmail())
+                .senderRole(message.getSender().getRole().getName())
                 .recipientId(message.getRecipient().getId())
                 .recipientName(message.getRecipient().getFirstName() + " " + message.getRecipient().getLastName())
                 .recipientEmail(message.getRecipient().getEmail())
+                .recipientRole(message.getRecipient().getRole().getName())
                 .isRead(message.isRead())
                 .createdAt(message.getCreatedAt())
                 .updatedAt(message.getUpdatedAt())

@@ -8,8 +8,11 @@
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between mb-4">
                 <h1 class="text-2xl font-bold text-gray-800">Управление сообщениями</h1>
-                <a href="/dashboard" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                <a href="/dashboard" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 mr-2">
                     <i class="fas fa-arrow-left mr-2"></i> Назад к панели
+                </a>
+                <a href="/messages" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    <i class="fas fa-comments mr-2"></i> Перейти в чат
                 </a>
             </div>
 
@@ -71,7 +74,7 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <#list receivedMessages as message>
-                                    <tr class="${message.isRead?string('', 'bg-blue-50')}">
+                                    <tr class="${message.isRead()?string('', 'bg-blue-50')}">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center">

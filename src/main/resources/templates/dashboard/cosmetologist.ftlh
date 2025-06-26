@@ -108,34 +108,112 @@
             <!-- Messages Widget -->
             <div class="bg-white shadow-md rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-gray-800">Сообщения</h2>
-                    <a href="/dashboard/messages" class="text-blue-600 hover:text-blue-800">
-                        <i class="fas fa-envelope"></i>
-                        <#if unreadMessageCount?? && unreadMessageCount gt 0>
-                            <span class="ml-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                    <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-comments mr-2 text-blue-600"></i>
+                        <#if currentUser.role == "COSMETOLOGIST">
+                            Служба поддержки
+                        <#else>
+                            Сообщения
+                        </#if>
+                    </h2>
+                    <div class="flex items-center space-x-2">
+                        <#if unreadMessageCount gt 0>
+                            <span class="px-2 py-1 bg-red-500 text-white text-xs rounded-full">
                                 ${unreadMessageCount}
                             </span>
                         </#if>
-                    </a>
-                </div>
-
-                <div class="text-center py-4">
-                    <div class="text-3xl font-bold text-gray-800 mb-2">
-                        <#if receivedMessages??>
-                            ${receivedMessages?size}
-                        <#else>
-                            0
-                        </#if>
+                        <a href="/messages" class="text-blue-600 hover:text-blue-800 text-sm">
+                            Все сообщения
+                        </a>
                     </div>
-                    <p class="text-sm text-gray-600">Всего сообщений</p>
                 </div>
 
-                <div class="mt-4 pt-4 border-t">
-                    <a href="/dashboard/messages" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
-                        Просмотреть все сообщения
-                        <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                    </a>
-                </div>
+                <#if chats?size == 0>
+                    <div class="text-center py-6">
+                        <i class="fas fa-comment-alt text-3xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 mb-3">
+                            <#if currentUser.role == "COSMETOLOGIST">
+                                У вас нет активных обращений в поддержку
+                            <#else>
+                                У вас нет активных чатов
+                            </#if>
+                        </p>
+                        <button onclick="openWriteAdminModal()" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-edit mr-2"></i>
+                            <#if currentUser.role == "COSMETOLOGIST">
+                                Обратиться в поддержку
+                            <#else>
+                                Написать администратору
+                            </#if>
+                        </button>
+                    </div>
+                <#else>
+                    <!-- Recent Chats -->
+                    <div class="space-y-3 mb-4">
+                        <#list chats as chat>
+                            <#if chat_index < 3> <!-- Показываем только первые 3 чата -->
+                                <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                                     onclick="openChat('${chat.chatId}')">
+                                    <!-- Avatar -->
+                                    <div class="relative flex-shrink-0">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm">
+                                            <#if chat.otherUserRole == "ADMIN">
+                                                <i class="fas fa-user-shield"></i>
+                                            <#elseif chat.otherUserRole == "COSMETOLOGIST">
+                                                <i class="fas fa-spa"></i>
+                                            <#else>
+                                                <i class="fas fa-user"></i>
+                                            </#if>
+                                        </div>
+                                        <#if chat.hasUnreadMessages>
+                                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                                                <span class="text-xs text-white font-bold">${chat.unreadCount}</span>
+                                            </div>
+                                        </#if>
+                                    </div>
+
+                                    <!-- Chat Info -->
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center justify-between">
+                                            <h4 class="text-sm font-medium text-gray-900 truncate">
+                                                ${chat.otherUserName}
+                                            </h4>
+                                            <span class="text-xs text-gray-500">${chat.lastMessageTime}</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 truncate">
+                                            <#if chat.isSystemChat()>
+                                                <i class="fas fa-cog mr-1"></i>
+                                                Системное уведомление
+                                            <#else>
+                                                <#if chat.lastMessageFromMe>
+                                                    <span class="text-blue-600">Вы: </span>
+                                                </#if>
+                                                ${chat.lastMessage}
+                                            </#if>
+                                        </p>
+                                    </div>
+                                </div>
+                            </#if>
+                        </#list>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-200">
+                        <button onclick="openWriteAdminModal()" 
+                                class="text-sm text-blue-600 hover:text-blue-800 flex items-center">
+                            <i class="fas fa-plus mr-1"></i>
+                            <#if currentUser.role == "COSMETOLOGIST">
+                                Новое обращение
+                            <#else>
+                                Новое сообщение
+                            </#if>
+                        </button>
+                        <a href="/messages" class="text-sm text-gray-600 hover:text-gray-800">
+                            Показать все →
+                        </a>
+                    </div>
+                </#if>
             </div>
 
             <!-- Materials Widget -->
@@ -407,4 +485,218 @@
             </#if>
         </div>
     </div>
+    <!-- Write to Admin Modal (компактная версия для дашборда) -->
+    <div id="writeAdminModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <#if currentUser.role == "COSMETOLOGIST">
+                                Обратиться в поддержку
+                            <#else>
+                                Написать администратору
+                            </#if>
+                        </h3>
+                        <button onclick="closeWriteAdminModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-2"></i>
+                            <div class="text-sm text-blue-800">
+                                <#if currentUser.role == "COSMETOLOGIST">
+                                    <p class="font-medium mb-1">Служба поддержки</p>
+                                    <p>Ваше сообщение будет отправлено всем администраторам. Первый свободный администратор ответит вам.</p>
+                                <#else>
+                                    <p class="font-medium mb-1">Обращение к администратору</p>
+                                    <p>Ваше сообщение будет отправлено администраторам для обработки.</p>
+                                </#if>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="writeAdminForm">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Сообщение</label>
+                            <textarea id="adminMessage"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    rows="4"
+                                    placeholder="Опишите вашу проблему или вопрос..."
+                                    maxlength="1000"
+                                    required></textarea>
+                            <div class="text-xs text-gray-500 mt-1">
+                                <span id="charCount">0</span>/1000 символов
+                            </div>
+                        </div>
+
+                        <!-- Quick templates for common requests -->
+                        <#if currentUser.role == "COSMETOLOGIST">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Быстрые шаблоны</label>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <button type="button" onclick="useTemplate('verification')" 
+                                            class="text-left p-2 text-xs border border-gray-200 rounded hover:bg-gray-50">
+                                        Вопрос по верификации
+                                    </button>
+                                    <button type="button" onclick="useTemplate('access')" 
+                                            class="text-left p-2 text-xs border border-gray-200 rounded hover:bg-gray-50">
+                                        Проблемы с доступом к материалам
+                                    </button>
+                                    <button type="button" onclick="useTemplate('technical')" 
+                                            class="text-left p-2 text-xs border border-gray-200 rounded hover:bg-gray-50">
+                                        Техническая проблема
+                                    </button>
+                                </div>
+                            </div>
+                        </#if>
+
+                        <div class="flex items-center justify-end space-x-3">
+                            <button type="button" 
+                                    onclick="closeWriteAdminModal()"
+                                    class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                Отмена
+                            </button>
+                            <button type="submit"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Отправить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Шаблоны сообщений для косметологов
+        const messageTemplates = {
+            verification: "Здравствуйте! У меня вопрос по поводу верификации моего аккаунта косметолога. ",
+            access: "Здравствуйте! У меня проблемы с доступом к обучающим материалам. ",
+            technical: "Здравствуйте! У меня возникла техническая проблема с сайтом. "
+        };
+
+        const adminMessageTextarea = document.getElementById('adminMessage');
+        const charCountSpan = document.getElementById('charCount');
+
+        // Обновление счетчика символов
+        if (adminMessageTextarea) {
+            adminMessageTextarea.addEventListener('input', function() {
+                const length = this.value.length;
+                charCountSpan.textContent = length;
+
+                if (length > 1000) {
+                    charCountSpan.classList.add('text-red-500');
+                } else {
+                    charCountSpan.classList.remove('text-red-500');
+                }
+            });
+        }
+
+        // Открытие модального окна
+        function openWriteAdminModal() {
+            document.getElementById('writeAdminModal').classList.remove('hidden');
+            if (adminMessageTextarea) {
+                adminMessageTextarea.focus();
+            }
+        }
+
+        // Закрытие модального окна
+        function closeWriteAdminModal() {
+            document.getElementById('writeAdminModal').classList.add('hidden');
+            document.getElementById('writeAdminForm').reset();
+            charCountSpan.textContent = '0';
+        }
+
+        // Использование шаблона
+        function useTemplate(templateKey) {
+            if (messageTemplates[templateKey]) {
+                adminMessageTextarea.value = messageTemplates[templateKey];
+                adminMessageTextarea.dispatchEvent(new Event('input'));
+                adminMessageTextarea.focus();
+                adminMessageTextarea.setSelectionRange(adminMessageTextarea.value.length, adminMessageTextarea.value.length);
+            }
+        }
+
+        // Открытие чата
+        function openChat(chatId) {
+            window.location.href = '/messages/chat/' + chatId;
+        }
+
+        // Обработка отправки формы
+        if (document.getElementById('writeAdminForm')) {
+            document.getElementById('writeAdminForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const content = adminMessageTextarea.value.trim();
+                if (!content) {
+                    showNotification('Пожалуйста, введите сообщение', 'error');
+                    return;
+                }
+
+                if (content.length > 1000) {
+                    showNotification('Сообщение слишком длинное', 'error');
+                    return;
+                }
+
+                try {
+                    // Получаем CSRF токен из мета-тегов
+                    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+                    const response = await fetch('/messages/support', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            [csrfHeader]: csrfToken
+                        },
+                        body: 'content=' + encodeURIComponent(content)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        closeWriteAdminModal();
+                        showNotification('Ваш запрос отправлен администраторам', 'success');
+
+                        // Обновляем виджет сообщений через 2 секунды
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        showNotification(result.error || 'Ошибка отправки сообщения', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showNotification('Ошибка отправки сообщения', 'error');
+                }
+            });
+        }
+
+        // Показ уведомлений
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = "fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white " + 
+                (type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 'bg-blue-500');
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Закрытие модального окна по клику вне его
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('writeAdminModal');
+            if (e.target === modal) {
+                closeWriteAdminModal();
+            }
+        });
+    </script>
 </@layout>
