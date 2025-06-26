@@ -5,6 +5,8 @@ import kz.arannati.arannati.dto.OrderDTO;
 import kz.arannati.arannati.dto.ProductDTO;
 import kz.arannati.arannati.dto.UserDTO;
 import kz.arannati.arannati.dto.WishlistDTO;
+import kz.arannati.arannati.entity.Material;
+import kz.arannati.arannati.service.MaterialService;
 import kz.arannati.arannati.service.MessageService;
 import kz.arannati.arannati.service.OrderService;
 import kz.arannati.arannati.service.ProductService;
@@ -17,11 +19,18 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.ArrayList;
 
 /**
  * Controller for handling admin functionality
@@ -41,6 +50,7 @@ public class AdminController {
     private final OrderService orderService;
     private final WishlistService wishlistService;
     private final MessageService messageService;
+    private final MaterialService materialService;
 
     /**
      * Admin users management page
@@ -122,7 +132,12 @@ public class AdminController {
     @GetMapping("/cosmetologists/verify")
     public String verifyCosmetologists(Model model) {
         List<UserDTO> pendingCosmetologists = userService.findPendingCosmetologists();
-        model.addAttribute("pendingCosmetologists", pendingCosmetologists);
+        model.addAttribute("cosmetologists", pendingCosmetologists);
+
+        // Add recently verified cosmetologists (using all verified cosmetologists for now)
+        List<UserDTO> recentlyVerified = userService.findVerifiedCosmetologists();
+        model.addAttribute("recentlyVerified", recentlyVerified);
+
         return "admin/verify-cosmetologists";
     }
 
@@ -193,6 +208,20 @@ public class AdminController {
     public String orders(Model model) {
         List<OrderDTO> orders = orderService.findAll();
         model.addAttribute("orders", orders);
+        return "admin/orders";
+    }
+
+    /**
+     * Admin pending orders page
+     */
+    @GetMapping("/orders/pending")
+    public String pendingOrders(Model model) {
+        // Get orders with PENDING status
+        Page<OrderDTO> pendingOrdersPage = orderService.findByStatusOrderByCreatedAtDesc("PENDING", Pageable.unpaged());
+        List<OrderDTO> pendingOrders = pendingOrdersPage.getContent();
+        model.addAttribute("orders", pendingOrders);
+        // Set the active filter to pending
+        model.addAttribute("activeFilter", "pending");
         return "admin/orders";
     }
 
@@ -312,6 +341,291 @@ public class AdminController {
         } catch (Exception e) {
             log.error("Error deleting message: {}", e.getMessage());
             return ResponseEntity.badRequest().body("Failed to delete message");
+        }
+    }
+
+    /**
+     * Update order status
+     * Note: This is a placeholder implementation. In a real application, you would
+     * implement the updateStatus method in the OrderService.
+     */
+    @PostMapping("/orders/{id}/status")
+    @ResponseBody
+    public ResponseEntity<String> updateOrderStatus(@PathVariable Long id, @RequestParam String status) {
+        try {
+            // Get the order
+            Optional<OrderDTO> orderOpt = orderService.findById(id);
+            if (orderOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Order not found");
+            }
+
+            // Update the status
+            OrderDTO order = orderOpt.get();
+            order.setStatus(status);
+
+            // Save the updated order
+            orderService.save(order);
+
+            return ResponseEntity.ok("Order status updated successfully");
+        } catch (Exception e) {
+            log.error("Error updating order status: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Failed to update order status");
+        }
+    }
+
+    /**
+     * Add note to order
+     * Note: This is a placeholder implementation. In a real application, you would
+     * implement the addNote method in the OrderService.
+     */
+    @PostMapping("/orders/{id}/note")
+    @ResponseBody
+    public ResponseEntity<String> addOrderNote(@PathVariable Long id, @RequestParam String note) {
+        try {
+            // Get the order
+            Optional<OrderDTO> orderOpt = orderService.findById(id);
+            if (orderOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Order not found");
+            }
+
+            // Update the notes
+            OrderDTO order = orderOpt.get();
+            String currentNotes = order.getNotes() != null ? order.getNotes() : "";
+            order.setNotes(currentNotes + "\n" + note);
+
+            // Save the updated order
+            orderService.save(order);
+
+            return ResponseEntity.ok("Note added successfully");
+        } catch (Exception e) {
+            log.error("Error adding note to order: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Failed to add note");
+        }
+    }
+
+    /**
+     * Admin add product page
+     * Note: This is a placeholder implementation. In a real application, you would
+     * implement the getAllCategories method in the ProductService.
+     */
+    @GetMapping("/products/add")
+    public String addProduct(Model model) {
+        model.addAttribute("product", new ProductDTO());
+
+        // Placeholder for categories
+        List<String> categories = new ArrayList<>();
+        categories.add("Уход за лицом");
+        categories.add("Уход за телом");
+        categories.add("Уход за волосами");
+        categories.add("Макияж");
+        categories.add("Парфюмерия");
+
+        model.addAttribute("categories", categories);
+        return "admin/edit-product";
+    }
+
+    /**
+     * Add new product
+     */
+    @PostMapping("/products/add")
+    public String addNewProduct(@ModelAttribute ProductDTO productDTO) {
+        try {
+            // Set default values for required fields that are not in the form
+            if (productDTO.getSku() == null || productDTO.getSku().isEmpty()) {
+                productDTO.setSku("SKU-" + System.currentTimeMillis());
+            }
+
+            if (productDTO.getCategoryId() == null) {
+                productDTO.setCategoryId(1L); // Default category ID
+            }
+
+            if (productDTO.getBrandId() == null) {
+                productDTO.setBrandId(1L); // Default brand ID
+            }
+
+            if (productDTO.getRegularPrice() == null) {
+                productDTO.setRegularPrice(new BigDecimal("0.01"));
+            }
+
+            if (productDTO.getStockQuantity() == null) {
+                productDTO.setStockQuantity(0);
+            }
+
+            if (productDTO.getSortOrder() == null) {
+                productDTO.setSortOrder(0);
+            }
+
+            productService.save(productDTO);
+            return "redirect:/admin/products";
+        } catch (Exception e) {
+            log.error("Error adding new product: {}", e.getMessage(), e);
+            return "redirect:/admin/products/add?error=true";
+        }
+    }
+
+    /**
+     * Delete product
+     * Note: This is a placeholder implementation. In a real application, you would
+     * modify the deleteById method in the ProductService to return a boolean.
+     */
+    @PostMapping("/products/{id}/delete")
+    @ResponseBody
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+        try {
+            // Check if product exists
+            Optional<ProductDTO> productOpt = productService.findById(id);
+            if (productOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Product not found");
+            }
+
+            // Delete the product
+            productService.deleteById(id);
+
+            return ResponseEntity.ok("Product deleted successfully");
+        } catch (Exception e) {
+            log.error("Error deleting product: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Failed to delete product");
+        }
+    }
+
+    /**
+     * Cancel order
+     * Note: This is a placeholder implementation. In a real application, you would
+     * implement the cancelOrder method in the OrderService.
+     */
+    @PostMapping("/orders/{id}/cancel")
+    @ResponseBody
+    public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
+        try {
+            // Get the order
+            Optional<OrderDTO> orderOpt = orderService.findById(id);
+            if (orderOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Order not found");
+            }
+
+            // Update the status to CANCELLED
+            OrderDTO order = orderOpt.get();
+            order.setStatus("CANCELLED");
+
+            // Save the updated order
+            orderService.save(order);
+
+            return ResponseEntity.ok("Order cancelled successfully");
+        } catch (Exception e) {
+            log.error("Error cancelling order: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Failed to cancel order");
+        }
+    }
+
+    /**
+     * Admin materials upload page
+     */
+    @GetMapping("/materials/upload")
+    public String materialsUpload(Model model) {
+        // Get the authenticated admin user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Optional<UserDTO> adminOpt = userService.findByEmail(email);
+
+        if (adminOpt.isEmpty()) {
+            return "redirect:/admin";
+        }
+
+        // Get recently uploaded materials
+        List<Material> recentMaterials = materialService.findAllByOrderByUploadDateDesc();
+        model.addAttribute("materials", recentMaterials);
+
+        return "admin/materials-upload";
+    }
+
+    /**
+     * Upload materials
+     */
+    @PostMapping("/materials/upload")
+    public String uploadMaterials(@RequestParam("file") MultipartFile file, @RequestParam("title") String title, @RequestParam("description") String description) {
+        try {
+            // Get the authenticated admin user
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            Optional<UserDTO> adminOpt = userService.findByEmail(email);
+
+            if (adminOpt.isEmpty()) {
+                return "redirect:/admin/materials/upload?error=true";
+            }
+
+            // Save the material
+            materialService.saveMaterial(file, title, description, email);
+
+            return "redirect:/admin/materials/upload?success=true";
+        } catch (Exception e) {
+            log.error("Error uploading materials: {}", e.getMessage(), e);
+            return "redirect:/admin/materials/upload?error=true";
+        }
+    }
+
+    /**
+     * Delete a material
+     * @param id The ID of the material to delete
+     * @return Redirect to the materials upload page
+     */
+    @GetMapping("/materials/{id}/delete")
+    public String deleteMaterial(@PathVariable Long id) {
+        boolean success = materialService.deleteById(id);
+        if (success) {
+            return "redirect:/admin/materials/upload?success=true";
+        } else {
+            return "redirect:/admin/materials/upload?error=true";
+        }
+    }
+
+    /**
+     * Get cosmetologist documents
+     * Note: This is a placeholder implementation. In a real application, you would
+     * fetch the actual documents from a document service or from the user's profile.
+     */
+    @GetMapping("/cosmetologists/{id}/documents")
+    @ResponseBody
+    public ResponseEntity<?> getCosmetologistDocuments(@PathVariable Long id) {
+        try {
+            Optional<UserDTO> cosmetologistOpt = userService.findById(id);
+            if (cosmetologistOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Cosmetologist not found");
+            }
+
+            UserDTO cosmetologist = cosmetologistOpt.get();
+
+            // Create a map for the response
+            Map<String, Object> response = new HashMap<>();
+            response.put("cosmetologistName", cosmetologist.getFirstName() + " " + cosmetologist.getLastName());
+
+            // Create a list of documents
+            List<Map<String, Object>> documents = new ArrayList<>();
+
+            // Add first document
+            Map<String, Object> doc1 = new HashMap<>();
+            doc1.put("id", 1);
+            doc1.put("title", "Сертификат косметолога");
+            doc1.put("type", "pdf");
+            doc1.put("url", "/documents/certificate.pdf");
+            doc1.put("description", "Сертификат о профессиональной подготовке");
+            documents.add(doc1);
+
+            // Add second document
+            Map<String, Object> doc2 = new HashMap<>();
+            doc2.put("id", 2);
+            doc2.put("title", "Диплом об образовании");
+            doc2.put("type", "image");
+            doc2.put("url", "/documents/diploma.jpg");
+            doc2.put("description", "Диплом о высшем образовании");
+            documents.add(doc2);
+
+            // Add documents to response
+            response.put("documents", documents);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error getting cosmetologist documents: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Failed to get cosmetologist documents");
         }
     }
 }
