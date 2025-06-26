@@ -1,6 +1,7 @@
 package kz.arannati.arannati.entity;
 
 import jakarta.persistence.*;
+import kz.arannati.arannati.enums.MessageType;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -100,9 +101,3 @@ public class Message {
     }
 }
 
-public enum MessageType {
-    DIRECT,           // Прямое сообщение между пользователями
-    ADMIN_BROADCAST,  // Рассылка косметологу/пользователю от админа
-    SUPPORT_REQUEST,  // Запрос в поддержку/админскую службу
-    SYSTEM_DECLINE    // Системное сообщение об отклонении заявки
-}

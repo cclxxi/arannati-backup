@@ -2,9 +2,8 @@ package kz.arannati.arannati.service.impl;
 
 import kz.arannati.arannati.dto.ChatDTO;
 import kz.arannati.arannati.dto.MessageDTO;
-import kz.arannati.arannati.dto.UserDTO;
 import kz.arannati.arannati.entity.Message;
-import kz.arannati.arannati.entity.MessageType;
+import kz.arannati.arannati.enums.MessageType;
 import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.repository.MessageRepository;
 import kz.arannati.arannati.service.ChatService;
@@ -14,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
