@@ -8,11 +8,11 @@
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between mb-4">
                 <h1 class="text-2xl font-bold text-gray-800">Управление сообщениями</h1>
-                <a href="/admin" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                <a href="/dashboard" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
                     <i class="fas fa-arrow-left mr-2"></i> Назад к панели
                 </a>
             </div>
-            
+
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
                 <div class="flex">
                     <div class="flex-shrink-0">
@@ -26,7 +26,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Messages Tabs -->
         <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
             <div class="border-b border-gray-200">
@@ -39,7 +39,7 @@
                     </button>
                 </nav>
             </div>
-            
+
             <!-- Received Messages Tab -->
             <div id="tab-content-received" class="tab-content block p-6">
                 <#if receivedMessages?size == 0>
@@ -98,7 +98,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <#if message.isRead>
+                                            <#if message.read>
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                     Прочитано
                                                 </span>
@@ -126,7 +126,7 @@
                     </div>
                 </#if>
             </div>
-            
+
             <!-- Sent Messages Tab -->
             <div id="tab-content-sent" class="tab-content hidden p-6">
                 <#if sentMessages?size == 0>
@@ -185,7 +185,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <#if message.isRead>
+                                            <#if message.read>
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                     Прочитано
                                                 </span>
@@ -211,14 +211,14 @@
                 </#if>
             </div>
         </div>
-        
+
         <!-- New Message Button -->
         <div class="fixed bottom-6 right-6">
             <button id="new-message-btn" class="bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <i class="fas fa-pen"></i>
             </button>
         </div>
-        
+
         <!-- New Message Modal -->
         <div id="new-message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
             <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
@@ -253,7 +253,7 @@
                 </form>
             </div>
         </div>
-        
+
         <!-- View Message Modal -->
         <div id="view-message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
             <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
@@ -278,43 +278,43 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Tab switching
             const tabButtons = document.querySelectorAll('.tab-button');
             const tabContents = document.querySelectorAll('.tab-content');
-            
+
             tabButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     // Remove active class from all buttons and hide all contents
                     tabButtons.forEach(btn => btn.classList.remove('active', 'border-blue-500', 'text-blue-600'));
                     tabButtons.forEach(btn => btn.classList.add('border-transparent', 'text-gray-500'));
                     tabContents.forEach(content => content.classList.add('hidden'));
-                    
+
                     // Add active class to clicked button and show corresponding content
                     button.classList.add('active', 'border-blue-500', 'text-blue-600');
                     button.classList.remove('border-transparent', 'text-gray-500');
-                    
+
                     const tabId = button.id.replace('tab-', '');
-                    document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
+                    document.getElementById('tab-content-' + tabId).classList.remove('hidden');
                 });
             });
-            
+
             // Modal handling
             const newMessageBtn = document.getElementById('new-message-btn');
             const newMessageModal = document.getElementById('new-message-modal');
             const closeModal = document.getElementById('close-modal');
             const cancelMessage = document.getElementById('cancel-message');
             const sendMessageForm = document.getElementById('send-message-form');
-            
+
             // View message modal
             const viewMessageModal = document.getElementById('view-message-modal');
             const closeViewModal = document.getElementById('close-view-modal');
             const closeViewBtn = document.getElementById('close-view-btn');
             const viewMessageTitle = document.getElementById('view-message-title');
             const viewMessageContent = document.getElementById('view-message-content');
-            
+
             // Open new message modal
             newMessageBtn.addEventListener('click', () => {
                 // Fetch users for recipient dropdown
@@ -323,59 +323,59 @@
                     .then(users => {
                         const recipientSelect = document.getElementById('recipient');
                         recipientSelect.innerHTML = '<option value="">Выберите получателя</option>';
-                        
+
                         users.forEach(user => {
                             const option = document.createElement('option');
                             option.value = user.id;
-                            option.textContent = `${user.firstName} ${user.lastName} (${user.email})`;
+                            option.textContent = user.firstName + ' ' + user.lastName + ' (' + user.email + ')';
                             recipientSelect.appendChild(option);
                         });
                     })
                     .catch(error => console.error('Error fetching users:', error));
-                
+
                 newMessageModal.classList.remove('hidden');
             });
-            
+
             // Close new message modal
             closeModal.addEventListener('click', () => {
                 newMessageModal.classList.add('hidden');
             });
-            
+
             cancelMessage.addEventListener('click', () => {
                 newMessageModal.classList.add('hidden');
             });
-            
+
             // Close view message modal
             closeViewModal.addEventListener('click', () => {
                 viewMessageModal.classList.add('hidden');
             });
-            
+
             closeViewBtn.addEventListener('click', () => {
                 viewMessageModal.classList.add('hidden');
             });
-            
+
             // View message
             document.querySelectorAll('.view-message').forEach(button => {
                 button.addEventListener('click', () => {
                     const content = button.getAttribute('data-content');
                     const sender = button.getAttribute('data-sender');
                     const recipient = button.getAttribute('data-recipient');
-                    
+
                     if (sender) {
-                        viewMessageTitle.textContent = `Сообщение от ${sender}`;
+                        viewMessageTitle.textContent = 'Сообщение от ' + sender;
                     } else if (recipient) {
-                        viewMessageTitle.textContent = `Сообщение для ${recipient}`;
+                        viewMessageTitle.textContent = 'Сообщение для ' + recipient;
                     } else {
                         viewMessageTitle.textContent = 'Просмотр сообщения';
                     }
-                    
+
                     viewMessageContent.textContent = content;
                     viewMessageModal.classList.remove('hidden');
-                    
+
                     // Mark as read if it's a received message
                     if (sender) {
                         const messageId = button.getAttribute('data-id');
-                        fetch(`/admin/messages/${messageId}/read`, {
+                        fetch('/admin/messages/' + messageId + '/read', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -384,60 +384,60 @@
                     }
                 });
             });
-            
+
             // Reply to message
             document.querySelectorAll('.reply-message').forEach(button => {
                 button.addEventListener('click', () => {
                     const userId = button.getAttribute('data-id');
                     const userName = button.getAttribute('data-name');
-                    
+
                     // Set recipient in dropdown
                     const recipientSelect = document.getElementById('recipient');
-                    
+
                     // First fetch users to populate the dropdown
                     fetch('/admin/users/list')
                         .then(response => response.json())
                         .then(users => {
                             recipientSelect.innerHTML = '<option value="">Выберите получателя</option>';
-                            
+
                             users.forEach(user => {
                                 const option = document.createElement('option');
                                 option.value = user.id;
-                                option.textContent = `${user.firstName} ${user.lastName} (${user.email})`;
-                                
+                                option.textContent = user.firstName + ' ' + user.lastName + ' (' + user.email + ')';
+
                                 // Select the user we're replying to
                                 if (user.id.toString() === userId) {
                                     option.selected = true;
                                 }
-                                
+
                                 recipientSelect.appendChild(option);
                             });
-                            
+
                             // Open the modal
                             newMessageModal.classList.remove('hidden');
                         })
                         .catch(error => console.error('Error fetching users:', error));
                 });
             });
-            
+
             // Send message form submission
             sendMessageForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                
+
                 const userId = document.getElementById('recipient').value;
                 const message = document.getElementById('message').value;
-                
+
                 if (!userId || !message) {
                     alert('Пожалуйста, выберите получателя и введите сообщение');
                     return;
                 }
-                
+
                 fetch('/admin/messages/send', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: `userId=${userId}&message=${encodeURIComponent(message)}`
+                    body: 'userId=' + userId + '&message=' + encodeURIComponent(message)
                 })
                 .then(response => {
                     if (response.ok) {
@@ -455,14 +455,14 @@
                     alert('Ошибка при отправке сообщения');
                 });
             });
-            
+
             // Delete message
             document.querySelectorAll('.delete-message').forEach(button => {
                 button.addEventListener('click', () => {
                     if (confirm('Вы уверены, что хотите удалить это сообщение?')) {
                         const messageId = button.getAttribute('data-id');
-                        
-                        fetch(`/admin/messages/${messageId}/delete`, {
+
+                        fetch('/admin/messages/' + messageId + '/delete', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',

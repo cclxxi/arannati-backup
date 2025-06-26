@@ -207,41 +207,65 @@
             const filterButtons = document.querySelectorAll('.filter-btn');
             const userRows = document.querySelectorAll('.user-row');
 
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Remove active class from all buttons
-                    filterButtons.forEach(btn => {
-                        btn.classList.remove('active', 'bg-blue-500', 'text-white');
-                        btn.classList.add('bg-gray-200', 'text-gray-700');
-                    });
-
-                    // Add active class to clicked button
-                    button.classList.add('active', 'bg-blue-500', 'text-white');
-                    button.classList.remove('bg-gray-200', 'text-gray-700');
-
-                    // Filter users
-                    const filterId = button.id;
-                    userRows.forEach(row => {
-                        const role = row.getAttribute('data-role');
-
-                        if (filterId === 'filter-all') {
-                            row.classList.remove('hidden');
-                        } else if (filterId === 'filter-users' && role === 'USER') {
-                            row.classList.remove('hidden');
-                        } else if (filterId === 'filter-cosmetologists' && role === 'COSMETOLOGIST') {
-                            row.classList.remove('hidden');
-                        } else if (filterId === 'filter-admins' && role === 'ADMIN') {
-                            row.classList.remove('hidden');
-                        } else {
-                            row.classList.add('hidden');
-                        }
-                    });
-                });
-            });
-
             // Search functionality
             const searchInput = document.getElementById('search-input');
             const searchBtn = document.getElementById('search-btn');
+
+            // Function to apply filter
+            function applyFilter(filterId) {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('active', 'bg-blue-500', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+
+                // Add active class to selected button
+                const selectedButton = document.getElementById(filterId);
+                if (selectedButton) {
+                    selectedButton.classList.add('active', 'bg-blue-500', 'text-white');
+                    selectedButton.classList.remove('bg-gray-200', 'text-gray-700');
+                }
+
+                // Filter users
+                userRows.forEach(row => {
+                    const role = row.getAttribute('data-role');
+                    row.classList.remove('hidden-by-filter');
+
+                    if (filterId === 'filter-all') {
+                        row.classList.remove('hidden');
+                    } else if (filterId === 'filter-users' && role === 'USER') {
+                        row.classList.remove('hidden');
+                    } else if (filterId === 'filter-cosmetologists' && role === 'COSMETOLOGIST') {
+                        row.classList.remove('hidden');
+                    } else if (filterId === 'filter-admins' && role === 'ADMIN') {
+                        row.classList.remove('hidden');
+                    } else {
+                        row.classList.add('hidden');
+                        row.classList.add('hidden-by-filter');
+                    }
+                });
+
+                // Save filter state to localStorage
+                localStorage.setItem('userFilterState', filterId);
+
+                // Re-apply search if there's a search term
+                if (searchInput.value.trim() !== '') {
+                    performSearch();
+                }
+            }
+
+            // Add click event to filter buttons
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    applyFilter(button.id);
+                });
+            });
+
+            // Load saved filter state on page load
+            const savedFilter = localStorage.getItem('userFilterState');
+            if (savedFilter) {
+                applyFilter(savedFilter);
+            }
 
             function performSearch() {
                 const searchTerm = searchInput.value.toLowerCase();
@@ -260,6 +284,10 @@
                 });
             }
 
+            // Make search work as live search
+            searchInput.addEventListener('input', performSearch);
+
+            // Keep the original button functionality too
             searchBtn.addEventListener('click', performSearch);
             searchInput.addEventListener('keyup', function(e) {
                 if (e.key === 'Enter') {
@@ -276,23 +304,14 @@
                     const isActive = button.getAttribute('data-active') === 'true';
                     const action = isActive ? 'заблокировать' : 'разблокировать';
 
-                    if (confirm(`Вы уверены, что хотите ${action} этого пользователя?`)) {
-                        fetch(`/admin/users/${userId}/toggle-active`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            }
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                window.location.reload();
-                            } else {
-                                alert(`Не удалось ${action} пользователя`);
-                            }
+                    if (confirm('Вы уверены, что хотите ' + action + ' этого пользователя?')) {
+                        window.api.post('/admin/users/' + userId + '/toggle-active')
+                        .then(() => {
+                            window.location.reload();
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert(`Ошибка: ${error}`);
+                            alert('Не удалось ' + action + ' пользователя');
                         });
                     }
                 });
@@ -306,22 +325,13 @@
                     const userId = button.getAttribute('data-id');
 
                     if (confirm('Вы уверены, что хотите подтвердить этого косметолога?')) {
-                        fetch(`/admin/cosmetologists/${userId}/approve`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            }
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                window.location.reload();
-                            } else {
-                                alert('Не удалось подтвердить косметолога');
-                            }
+                        window.api.post('/admin/cosmetologists/' + userId + '/approve')
+                        .then(() => {
+                            window.location.reload();
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert(`Ошибка: ${error}`);
+                            alert('Не удалось подтвердить косметолога');
                         });
                     }
                 });
@@ -335,22 +345,13 @@
                     const userId = button.getAttribute('data-id');
 
                     if (confirm('Вы уверены, что хотите отклонить этого косметолога?')) {
-                        fetch(`/admin/cosmetologists/${userId}/decline`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            }
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                window.location.reload();
-                            } else {
-                                alert('Не удалось отклонить косметолога');
-                            }
+                        window.api.post('/admin/cosmetologists/' + userId + '/decline')
+                        .then(() => {
+                            window.location.reload();
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert(`Ошибка: ${error}`);
+                            alert('Не удалось отклонить косметолога');
                         });
                     }
                 });
@@ -370,7 +371,7 @@
                     const userId = button.getAttribute('data-id');
                     const userName = button.getAttribute('data-name');
 
-                    messageModalTitle.textContent = `Сообщение для ${userName}`;
+                    messageModalTitle.textContent = 'Сообщение для ' + userName;
                     recipientIdInput.value = userId;
                     messageModal.classList.remove('hidden');
                 });
@@ -390,21 +391,17 @@
                 const userId = recipientIdInput.value;
                 const message = document.getElementById('message-content').value;
 
-                fetch('/admin/messages/send', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `userId=${userId}&message=${encodeURIComponent(message)}`
-                })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Сообщение успешно отправлено');
-                        messageModal.classList.add('hidden');
-                        sendMessageForm.reset();
-                    } else {
-                        alert('Ошибка при отправке сообщения');
-                    }
+                // Create a FormData object to send as URL-encoded data
+                const formData = new FormData();
+                formData.append('userId', userId);
+                formData.append('message', message);
+
+                // Use the api client to send the request
+                window.api.uploadFile('/admin/messages/send', formData)
+                .then(() => {
+                    alert('Сообщение успешно отправлено');
+                    messageModal.classList.add('hidden');
+                    sendMessageForm.reset();
                 })
                 .catch(error => {
                     console.error('Error sending message:', error);

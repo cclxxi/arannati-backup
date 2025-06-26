@@ -7,6 +7,10 @@
     <meta name="description" content="${pageDescription!'Arannati - Премиальная космецевтика и БАДы'}">
     <title>${pageTitle!'Arannati'}</title>
 
+    <!-- CSRF -->
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
 
