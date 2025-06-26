@@ -116,18 +116,29 @@ function initCartCounter() {
 }
 
 async function updateCartCounter() {
-    const { success, data, error } = await errorHandler.safeAsync(async () => {
-        return await api.get('/api/cart/count');
-    }, false); // Не показываем тост с ошибкой при обновлении счетчика
+    // Check if cart counter element exists before making the request
+    const counter = document.querySelector('.cart-counter');
+    if (!counter) {
+        return; // Exit if counter doesn't exist (e.g., on admin pages)
+    }
 
-    if (success) {
-        const counter = document.querySelector('.cart-counter');
-        if (counter && data.count !== undefined) {
+    try {
+        const { success, data, error } = await errorHandler.safeAsync(async () => {
+            return await api.get('/api/cart/count');
+        }, false); // Не показываем тост с ошибкой при обновлении счетчика
+
+        if (success && data && data.count !== undefined) {
             counter.textContent = data.count;
             counter.style.display = data.count > 0 ? 'flex' : 'none';
+        } else {
+            // If the request fails or returns invalid data, hide the counter
+            counter.style.display = 'none';
+            console.error('Failed to update cart counter:', error);
         }
-    } else {
-        console.error('Failed to update cart counter:', error);
+    } catch (e) {
+        // If an exception occurs, hide the counter
+        counter.style.display = 'none';
+        console.error('Error updating cart counter:', e);
     }
 }
 
