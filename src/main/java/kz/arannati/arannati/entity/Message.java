@@ -30,7 +30,7 @@ public class Message {
     private User recipient;
 
     @Column(name = "is_read", nullable = false)
-    private boolean isRead;
+    private boolean read;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -100,7 +100,7 @@ public class Message {
     }
 }
 
-enum MessageType {
+public enum MessageType {
     DIRECT,           // Прямое сообщение между пользователями
     ADMIN_BROADCAST,  // Рассылка косметологу/пользователю от админа
     SUPPORT_REQUEST,  // Запрос в поддержку/админскую службу

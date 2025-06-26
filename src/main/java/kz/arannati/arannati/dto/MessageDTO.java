@@ -21,17 +21,22 @@ public class MessageDTO {
 
     @NotNull(message = "Sender ID is required")
     private Long senderId;
-    
+
     private String senderName;
     private String senderEmail;
 
     @NotNull(message = "Recipient ID is required")
     private Long recipientId;
-    
+
     private String recipientName;
     private String recipientEmail;
 
     private boolean isRead;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private String chatId;
+    private String messageType;
+    private boolean isBroadcast;
+    private boolean isSystemMessage;
 }
