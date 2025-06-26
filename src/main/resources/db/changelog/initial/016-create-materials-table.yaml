@@ -1,0 +1,72 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-materials-table
+      author: Ilia_P
+      preConditions:
+         - onFail: MARK_RAN
+         - not:
+           - tableExists:
+             - tableName: materials
+             - schemaName: arannati
+      changes:
+        - createTable:
+            tableName: materials
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(1000)
+              - column:
+                  name: file_path
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_size
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: upload_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: uploaded_by
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_materials_upload_date
+            tableName: materials
+            columns:
+              - column:
+                  name: upload_date
+        - createIndex:
+            indexName: idx_materials_uploaded_by
+            tableName: materials
+            columns:
+              - column:
+                  name: uploaded_by

@@ -29,7 +29,7 @@ public class AuthUserDetailsService implements UserDetailsService {
                 true,                              // accountNonExpired
                 true,                              // credentialsNonExpired
                 true,                              // accountNonLocked
-                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()))
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().getName()))
         );
     }
 }
