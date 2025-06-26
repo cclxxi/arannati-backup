@@ -442,10 +442,15 @@
                     const cosmetologistName = button.getAttribute('data-name');
 
                     if (confirm('Вы уверены, что хотите подтвердить косметолога "' + cosmetologistName + '"?')) {
+                        // Get CSRF token
+                        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
                         fetch('/admin/cosmetologists/' + cosmetologistId + '/approve', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
+                                [header]: token
                             }
                         })
                         .then(response => {
@@ -506,10 +511,15 @@
                     return;
                 }
 
+                // Get CSRF token
+                const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
                 fetch('/admin/cosmetologists/' + cosmetologistId + '/decline', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
+                        [header]: token
                     },
                     body: 'reason=' + encodeURIComponent(reason)
                 })
@@ -569,10 +579,15 @@
                     return;
                 }
 
+                // Get CSRF token
+                const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
                 fetch('/admin/messages/send', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
+                        [header]: token
                     },
                     body: 'userId=' + encodeURIComponent(cosmetologistId) + '&message=' + encodeURIComponent(message)
                 })
