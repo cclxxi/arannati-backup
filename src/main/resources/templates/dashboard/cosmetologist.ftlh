@@ -12,7 +12,7 @@
                     Косметолог
                 </span>
             </div>
-            
+
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
                 <div class="flex">
                     <div class="flex-shrink-0">
@@ -30,7 +30,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <#if !user.isVerified>
                 <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
                     <div class="flex">
@@ -46,9 +46,9 @@
                 </div>
             </#if>
         </div>
-        
+
         <!-- Dashboard Widgets -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <!-- Profile Widget -->
             <div class="bg-white shadow-md rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
@@ -57,7 +57,7 @@
                         <i class="fas fa-edit"></i>
                     </a>
                 </div>
-                
+
                 <div class="space-y-3">
                     <div class="flex items-center">
                         <i class="fas fa-envelope text-gray-500 w-6"></i>
@@ -72,7 +72,7 @@
                         <span class="ml-2">${user.phone!'-'}</span>
                     </div>
                 </div>
-                
+
                 <div class="mt-4 pt-4 border-t">
                     <a href="/dashboard/profile" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
                         Редактировать профиль
@@ -80,7 +80,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <!-- Orders Widget -->
             <div class="bg-white shadow-md rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
@@ -89,14 +89,14 @@
                         <i class="fas fa-list"></i>
                     </a>
                 </div>
-                
+
                 <div class="text-center py-4">
                     <div class="text-3xl font-bold text-gray-800 mb-2">
                         ${orders?size}
                     </div>
                     <p class="text-sm text-gray-600">Всего заказов</p>
                 </div>
-                
+
                 <div class="mt-4 pt-4 border-t">
                     <a href="/dashboard/orders" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
                         Просмотреть все заказы
@@ -104,7 +104,40 @@
                     </a>
                 </div>
             </div>
-            
+
+            <!-- Messages Widget -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">Сообщения</h2>
+                    <a href="/dashboard/messages" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-envelope"></i>
+                        <#if unreadMessageCount?? && unreadMessageCount gt 0>
+                            <span class="ml-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                ${unreadMessageCount}
+                            </span>
+                        </#if>
+                    </a>
+                </div>
+
+                <div class="text-center py-4">
+                    <div class="text-3xl font-bold text-gray-800 mb-2">
+                        <#if receivedMessages??>
+                            ${receivedMessages?size}
+                        <#else>
+                            0
+                        </#if>
+                    </div>
+                    <p class="text-sm text-gray-600">Всего сообщений</p>
+                </div>
+
+                <div class="mt-4 pt-4 border-t">
+                    <a href="/dashboard/messages" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                        Просмотреть все сообщения
+                        <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                    </a>
+                </div>
+            </div>
+
             <!-- Materials Widget -->
             <div class="bg-white shadow-md rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
@@ -113,7 +146,7 @@
                         <i class="fas fa-book"></i>
                     </a>
                 </div>
-                
+
                 <div class="text-center py-4">
                     <div class="text-3xl font-bold text-gray-800 mb-2">
                         <#if user.isVerified>
@@ -124,7 +157,7 @@
                     </div>
                     <p class="text-sm text-gray-600">Доступных материалов</p>
                 </div>
-                
+
                 <div class="mt-4 pt-4 border-t">
                     <a href="/materials" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 <#if !user.isVerified>opacity-50 pointer-events-none</#if>">
                         Просмотреть материалы
@@ -133,7 +166,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Recent Orders -->
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between mb-4">
@@ -142,7 +175,7 @@
                     Все заказы
                 </a>
             </div>
-            
+
             <#if orders?size == 0>
                 <div class="text-center py-8">
                     <div class="text-4xl text-gray-300 mb-3">
@@ -230,7 +263,7 @@
                 </div>
             </#if>
         </div>
-        
+
         <!-- Materials Section -->
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between mb-4">
@@ -239,7 +272,7 @@
                     Все материалы
                 </a>
             </div>
-            
+
             <#if !user.isVerified>
                 <div class="text-center py-8">
                     <div class="text-4xl text-gray-300 mb-3">
@@ -263,7 +296,7 @@
                             <i class="fas fa-download mr-1"></i> Скачать
                         </a>
                     </div>
-                    
+
                     <div class="border rounded-lg p-4">
                         <div class="flex items-center mb-3">
                             <div class="bg-green-100 p-2 rounded-md">
@@ -278,7 +311,7 @@
                             <i class="fas fa-download mr-1"></i> Скачать
                         </a>
                     </div>
-                    
+
                     <div class="border rounded-lg p-4">
                         <div class="flex items-center mb-3">
                             <div class="bg-red-100 p-2 rounded-md">
@@ -296,7 +329,7 @@
                 </div>
             </#if>
         </div>
-        
+
         <!-- Special Offers -->
         <div class="bg-white shadow-md rounded-lg p-6">
             <div class="flex items-center justify-between mb-4">
@@ -305,7 +338,7 @@
                     Все предложения
                 </a>
             </div>
-            
+
             <#if !user.isVerified>
                 <div class="text-center py-8">
                     <div class="text-4xl text-gray-300 mb-3">
@@ -328,7 +361,7 @@
                             В корзину
                         </button>
                     </div>
-                    
+
                     <div class="border rounded-lg p-4 text-center">
                         <div class="h-40 bg-gray-100 rounded-md flex items-center justify-center mb-3">
                             <i class="fas fa-image text-gray-400 text-4xl"></i>
@@ -342,7 +375,7 @@
                             В корзину
                         </button>
                     </div>
-                    
+
                     <div class="border rounded-lg p-4 text-center">
                         <div class="h-40 bg-gray-100 rounded-md flex items-center justify-center mb-3">
                             <i class="fas fa-image text-gray-400 text-4xl"></i>
@@ -356,7 +389,7 @@
                             В корзину
                         </button>
                     </div>
-                    
+
                     <div class="border rounded-lg p-4 text-center">
                         <div class="h-40 bg-gray-100 rounded-md flex items-center justify-center mb-3">
                             <i class="fas fa-image text-gray-400 text-4xl"></i>

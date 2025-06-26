@@ -1,11 +1,14 @@
 package kz.arannati.arannati.controller;
 
+import kz.arannati.arannati.dto.CosmetologistVerificationDTO;
 import kz.arannati.arannati.dto.MessageDTO;
 import kz.arannati.arannati.dto.OrderDTO;
 import kz.arannati.arannati.dto.ProductDTO;
 import kz.arannati.arannati.dto.UserDTO;
 import kz.arannati.arannati.dto.WishlistDTO;
 import kz.arannati.arannati.entity.Material;
+import kz.arannati.arannati.service.CosmetologistVerificationService;
+import kz.arannati.arannati.service.FileStorageService;
 import kz.arannati.arannati.service.MaterialService;
 import kz.arannati.arannati.service.MessageService;
 import kz.arannati.arannati.service.OrderService;
@@ -25,7 +28,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +57,8 @@ public class AdminController {
     private final WishlistService wishlistService;
     private final MessageService messageService;
     private final MaterialService materialService;
+    private final CosmetologistVerificationService cosmetologistVerificationService;
+    private final FileStorageService fileStorageService;
 
     /**
      * Admin users management page
@@ -580,8 +588,6 @@ public class AdminController {
 
     /**
      * Get cosmetologist documents
-     * Note: This is a placeholder implementation. In a real application, you would
-     * fetch the actual documents from a document service or from the user's profile.
      */
     @GetMapping("/cosmetologists/{id}/documents")
     @ResponseBody
@@ -594,6 +600,14 @@ public class AdminController {
 
             UserDTO cosmetologist = cosmetologistOpt.get();
 
+            // Get verification record for the cosmetologist
+            Optional<CosmetologistVerificationDTO> verificationOpt = cosmetologistVerificationService.findByUserId(id);
+            if (verificationOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Verification record not found");
+            }
+
+            CosmetologistVerificationDTO verification = verificationOpt.get();
+
             // Create a map for the response
             Map<String, Object> response = new HashMap<>();
             response.put("cosmetologistName", cosmetologist.getFirstName() + " " + cosmetologist.getLastName());
@@ -601,31 +615,71 @@ public class AdminController {
             // Create a list of documents
             List<Map<String, Object>> documents = new ArrayList<>();
 
-            // Add first document
-            Map<String, Object> doc1 = new HashMap<>();
-            doc1.put("id", 1);
-            doc1.put("title", "Сертификат косметолога");
-            doc1.put("type", "pdf");
-            doc1.put("url", "/documents/certificate.pdf");
-            doc1.put("description", "Сертификат о профессиональной подготовке");
-            documents.add(doc1);
-
-            // Add second document
-            Map<String, Object> doc2 = new HashMap<>();
-            doc2.put("id", 2);
-            doc2.put("title", "Диплом об образовании");
-            doc2.put("type", "image");
-            doc2.put("url", "/documents/diploma.jpg");
-            doc2.put("description", "Диплом о высшем образовании");
-            documents.add(doc2);
+            // Add diploma document
+            Map<String, Object> doc = new HashMap<>();
+            doc.put("id", verification.getId());
+            doc.put("title", "Диплом об образовании");
+            doc.put("type", verification.getDiplomaOriginalFilename().toLowerCase().endsWith(".pdf") ? "pdf" : "image");
+            doc.put("url", "/admin/cosmetologists/" + id + "/diploma");
+            doc.put("filename", verification.getDiplomaOriginalFilename());
+            doc.put("description", "Диплом об образовании из " + verification.getInstitutionName());
+            documents.add(doc);
 
             // Add documents to response
             response.put("documents", documents);
+            response.put("verification", verification);
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error getting cosmetologist documents: {}", e.getMessage());
             return ResponseEntity.badRequest().body("Failed to get cosmetologist documents");
+        }
+    }
+
+    /**
+     * Download cosmetologist diploma
+     */
+    @GetMapping("/cosmetologists/{id}/diploma")
+    public ResponseEntity<?> downloadCosmetologistDiploma(@PathVariable Long id) {
+        try {
+            // Get verification record for the cosmetologist
+            Optional<CosmetologistVerificationDTO> verificationOpt = cosmetologistVerificationService.findByUserId(id);
+            if (verificationOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Verification record not found");
+            }
+
+            CosmetologistVerificationDTO verification = verificationOpt.get();
+
+            // Get the file path
+            Path filePath = fileStorageService.getFilePath(verification.getDiplomaFilePath(), "cosmetologist-diplomas");
+
+            // Check if file exists
+            if (!Files.exists(filePath)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Determine content type
+            String contentType;
+            String filename = verification.getDiplomaOriginalFilename().toLowerCase();
+            if (filename.endsWith(".pdf")) {
+                contentType = "application/pdf";
+            } else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+                contentType = "image/jpeg";
+            } else if (filename.endsWith(".png")) {
+                contentType = "image/png";
+            } else {
+                contentType = "application/octet-stream";
+            }
+
+            // Return the file
+            return ResponseEntity.ok()
+                .contentType(org.springframework.http.MediaType.parseMediaType(contentType))
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, 
+                       "attachment; filename=\"" + verification.getDiplomaOriginalFilename() + "\"")
+                .body(new org.springframework.core.io.InputStreamResource(Files.newInputStream(filePath)));
+        } catch (Exception e) {
+            log.error("Error downloading cosmetologist diploma: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Failed to download cosmetologist diploma");
         }
     }
 }

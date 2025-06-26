@@ -1,6 +1,6 @@
 <#assign pageTitle = "Регистрация косметолога - Arannati">
 <#assign pageDescription = "Регистрация для специалистов косметологии">
-<#assign additionalJS = ["/static/js/pages/auth.js", "/static/js/components/file-uploader.js"]>
+<#assign additionalJS = ["/static/js/pages/auth.js", "/static/js/components/file-uploader.js", "/static/js/pages/cosmetologist-registration.js"]>
 <#include "../layouts/main.ftlh">
 
 <@layout>

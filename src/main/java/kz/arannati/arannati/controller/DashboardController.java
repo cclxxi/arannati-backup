@@ -1,5 +1,6 @@
 package kz.arannati.arannati.controller;
 
+import kz.arannati.arannati.dto.MessageDTO;
 import kz.arannati.arannati.dto.OrderDTO;
 import kz.arannati.arannati.dto.UserDTO;
 import kz.arannati.arannati.service.MessageService;
@@ -64,14 +65,25 @@ public class DashboardController {
 
         // Determine which dashboard to show based on user role
         String roleName = user.getRole();
-        if ("ADMIN".equals(roleName)) {
-            // Add unread message count for admin
-            long unreadMessageCount = messageService.countUnreadByRecipientId(user.getId());
-            model.addAttribute("unreadMessageCount", unreadMessageCount);
 
+        // Add unread message count for all users
+        long unreadMessageCount = messageService.countUnreadByRecipientId(user.getId());
+        model.addAttribute("unreadMessageCount", unreadMessageCount);
+
+        // Add messages for all users
+        List<MessageDTO> receivedMessages = messageService.findByRecipientId(user.getId());
+        List<MessageDTO> sentMessages = messageService.findBySenderId(user.getId());
+        model.addAttribute("receivedMessages", receivedMessages);
+        model.addAttribute("sentMessages", sentMessages);
+
+        if ("ADMIN".equals(roleName)) {
             // Add users list for admin dashboard
             List<UserDTO> users = userService.findAll();
             model.addAttribute("users", users);
+
+            // Add pending cosmetologists for admin dashboard
+            List<UserDTO> pendingCosmetologists = userService.findPendingCosmetologists();
+            model.addAttribute("pendingCosmetologists", pendingCosmetologists);
 
             return "dashboard/admin";
         } else if ("COSMETOLOGIST".equals(roleName)) {

@@ -218,73 +218,49 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <!-- Example pending verification rows -->
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-user text-gray-500"></i>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            Анна Иванова
+                        <#if pendingCosmetologists?? && pendingCosmetologists?size gt 0>
+                            <#list pendingCosmetologists as cosmetologist>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-user text-gray-500"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    ${cosmetologist.firstName} ${cosmetologist.lastName}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">anna@example.com</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-500">15.05.2023</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="#" class="text-blue-600 hover:text-blue-900">
-                                    <i class="fas fa-file-pdf mr-1"></i> Просмотреть
-                                </a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button class="bg-green-100 text-green-800 px-3 py-1 rounded-full mr-2 hover:bg-green-200">
-                                    <i class="fas fa-check mr-1"></i> Принять
-                                </button>
-                                <button class="bg-red-100 text-red-800 px-3 py-1 rounded-full hover:bg-red-200">
-                                    <i class="fas fa-times mr-1"></i> Отклонить
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-user text-gray-500"></i>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            Сергей Петров
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">sergey@example.com</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-500">17.05.2023</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="#" class="text-blue-600 hover:text-blue-900">
-                                    <i class="fas fa-file-pdf mr-1"></i> Просмотреть
-                                </a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button class="bg-green-100 text-green-800 px-3 py-1 rounded-full mr-2 hover:bg-green-200">
-                                    <i class="fas fa-check mr-1"></i> Принять
-                                </button>
-                                <button class="bg-red-100 text-red-800 px-3 py-1 rounded-full hover:bg-red-200">
-                                    <i class="fas fa-times mr-1"></i> Отклонить
-                                </button>
-                            </td>
-                        </tr>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">${cosmetologist.email}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-500">${cosmetologist.createdAt}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="/admin/cosmetologists/${cosmetologist.id}/documents" class="text-blue-600 hover:text-blue-900 view-documents" data-id="${cosmetologist.id}">
+                                            <i class="fas fa-file-pdf mr-1"></i> Просмотреть
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="approve-cosmetologist bg-green-100 text-green-800 px-3 py-1 rounded-full mr-2 hover:bg-green-200" data-id="${cosmetologist.id}" data-name="${cosmetologist.firstName} ${cosmetologist.lastName}">
+                                            <i class="fas fa-check mr-1"></i> Принять
+                                        </button>
+                                        <button class="decline-cosmetologist bg-red-100 text-red-800 px-3 py-1 rounded-full hover:bg-red-200" data-id="${cosmetologist.id}" data-name="${cosmetologist.firstName} ${cosmetologist.lastName}">
+                                            <i class="fas fa-times mr-1"></i> Отклонить
+                                        </button>
+                                    </td>
+                                </tr>
+                            </#list>
+                        <#else>
+                            <tr>
+                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                    Нет ожидающих верификации косметологов
+                                </td>
+                            </tr>
+                        </#if>
                     </tbody>
                 </table>
             </div>

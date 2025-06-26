@@ -28,7 +28,7 @@
         </div>
 
         <!-- Dashboard Widgets -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <!-- Profile Widget -->
             <div class="bg-white shadow-md rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
@@ -80,6 +80,39 @@
                 <div class="mt-4 pt-4 border-t">
                     <a href="/dashboard/orders" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
                         Просмотреть все заказы
+                        <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Messages Widget -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">Сообщения</h2>
+                    <a href="/dashboard/messages" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-envelope"></i>
+                        <#if unreadMessageCount?? && unreadMessageCount gt 0>
+                            <span class="ml-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                ${unreadMessageCount}
+                            </span>
+                        </#if>
+                    </a>
+                </div>
+
+                <div class="text-center py-4">
+                    <div class="text-3xl font-bold text-gray-800 mb-2">
+                        <#if receivedMessages??>
+                            ${receivedMessages?size}
+                        <#else>
+                            0
+                        </#if>
+                    </div>
+                    <p class="text-sm text-gray-600">Всего сообщений</p>
+                </div>
+
+                <div class="mt-4 pt-4 border-t">
+                    <a href="/dashboard/messages" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                        Просмотреть все сообщения
                         <i class="fas fa-chevron-right ml-1 text-xs"></i>
                     </a>
                 </div>

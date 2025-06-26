@@ -85,10 +85,10 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">${cosmetologist.registrationDate}</div>
+                                        <div class="text-sm text-gray-900">${cosmetologist.createdAt}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">${cosmetologist.specialization}</div>
+                                        <div class="text-sm text-gray-900">${cosmetologist.specialization!'-'}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <button class="view-documents px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold" data-id="${cosmetologist.id}">
@@ -96,6 +96,9 @@
                                         </button>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="message-cosmetologist text-blue-600 hover:text-blue-900 mr-3" data-id="${cosmetologist.id}" data-name="${cosmetologist.firstName} ${cosmetologist.lastName}" data-email="${cosmetologist.email}">
+                                            <i class="fas fa-envelope"></i> Сообщение
+                                        </button>
                                         <button class="approve-cosmetologist text-green-600 hover:text-green-900 mr-3" data-id="${cosmetologist.id}" data-name="${cosmetologist.firstName} ${cosmetologist.lastName}">
                                             <i class="fas fa-check-circle"></i> Подтвердить
                                         </button>
@@ -165,10 +168,10 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">${cosmetologist.verificationDate}</div>
+                                        <div class="text-sm text-gray-900">${cosmetologist.verificationDate!'-'}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">${cosmetologist.specialization}</div>
+                                        <div class="text-sm text-gray-900">${cosmetologist.specialization!'-'}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -239,6 +242,37 @@
         </div>
     </div>
 
+    <!-- Message Modal -->
+    <div id="message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="px-6 py-4 border-b">
+                <div class="flex items-center justify-between">
+                    <h3 id="message-title" class="text-lg font-medium text-gray-900">Отправить сообщение</h3>
+                    <button id="close-message-modal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <form id="message-form">
+                <div class="px-6 py-4">
+                    <input type="hidden" id="message-cosmetologist-id">
+                    <div class="mb-4">
+                        <label for="message-content" class="block text-sm font-medium text-gray-700 mb-1">Сообщение</label>
+                        <textarea id="message-content" name="message" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t flex justify-end">
+                    <button type="button" id="cancel-message" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 mr-2">
+                        Отмена
+                    </button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        Отправить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // View documents
@@ -262,6 +296,56 @@
                             // Clear previous content
                             documentsContent.innerHTML = '';
 
+                            // Add verification details if available
+                            if (data.verification) {
+                                const verificationElement = document.createElement('div');
+                                verificationElement.className = 'border rounded-lg overflow-hidden mb-4';
+
+                                let verificationContent = 
+                                    '<div class="px-4 py-2 bg-gray-50 border-b">' +
+                                    '<h4 class="font-medium">Информация о верификации</h4>' +
+                                    '</div>' +
+                                    '<div class="p-4">' +
+                                    '<div class="grid grid-cols-2 gap-4">';
+
+                                if (data.verification.institutionName) {
+                                    verificationContent += 
+                                        '<div class="col-span-2">' +
+                                        '<p class="text-sm font-medium text-gray-500">Учебное заведение</p>' +
+                                        '<p class="text-sm text-gray-900">' + data.verification.institutionName + '</p>' +
+                                        '</div>';
+                                }
+
+                                if (data.verification.graduationYear) {
+                                    verificationContent += 
+                                        '<div>' +
+                                        '<p class="text-sm font-medium text-gray-500">Год окончания</p>' +
+                                        '<p class="text-sm text-gray-900">' + data.verification.graduationYear + '</p>' +
+                                        '</div>';
+                                }
+
+                                if (data.verification.specialization) {
+                                    verificationContent += 
+                                        '<div>' +
+                                        '<p class="text-sm font-medium text-gray-500">Специализация</p>' +
+                                        '<p class="text-sm text-gray-900">' + data.verification.specialization + '</p>' +
+                                        '</div>';
+                                }
+
+                                if (data.verification.licenseNumber) {
+                                    verificationContent += 
+                                        '<div>' +
+                                        '<p class="text-sm font-medium text-gray-500">Номер лицензии</p>' +
+                                        '<p class="text-sm text-gray-900">' + data.verification.licenseNumber + '</p>' +
+                                        '</div>';
+                                }
+
+                                verificationContent += '</div></div>';
+
+                                verificationElement.innerHTML = verificationContent;
+                                documentsContent.appendChild(verificationElement);
+                            }
+
                             // Add documents
                             if (data.documents && data.documents.length > 0) {
                                 data.documents.forEach(doc => {
@@ -276,28 +360,45 @@
 
                                     if (doc.type === 'image') {
                                         docContent += 
-                                            '<img src="' + doc.url + '" alt="' + doc.title + '" class="max-w-full h-auto rounded">';
+                                            '<div class="flex items-center mb-3">' +
+                                            '<i class="fas fa-file-image text-green-500 text-3xl mr-3"></i>' +
+                                            '<div>' +
+                                            '<p class="text-sm text-gray-700">' + (doc.description || 'Изображение') + '</p>' +
+                                            '<p class="text-xs text-gray-500">' + (doc.filename || '') + '</p>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<div class="flex justify-center">' +
+                                            '<a href="' + doc.url + '" target="_blank" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">' +
+                                            '<i class="fas fa-download mr-1"></i> Скачать диплом' +
+                                            '</a>' +
+                                            '</div>';
                                     } else if (doc.type === 'pdf') {
                                         docContent += 
-                                            '<div class="flex items-center">' +
+                                            '<div class="flex items-center mb-3">' +
                                             '<i class="fas fa-file-pdf text-red-500 text-3xl mr-3"></i>' +
                                             '<div>' +
                                             '<p class="text-sm text-gray-700">' + (doc.description || 'PDF документ') + '</p>' +
-                                            '<a href="' + doc.url + '" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">' +
-                                            'Открыть документ <i class="fas fa-external-link-alt ml-1"></i>' +
-                                            '</a>' +
+                                            '<p class="text-xs text-gray-500">' + (doc.filename || '') + '</p>' +
                                             '</div>' +
+                                            '</div>' +
+                                            '<div class="flex justify-center">' +
+                                            '<a href="' + doc.url + '" target="_blank" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">' +
+                                            '<i class="fas fa-download mr-1"></i> Скачать диплом' +
+                                            '</a>' +
                                             '</div>';
                                     } else {
                                         docContent += 
-                                            '<div class="flex items-center">' +
+                                            '<div class="flex items-center mb-3">' +
                                             '<i class="fas fa-file text-gray-500 text-3xl mr-3"></i>' +
                                             '<div>' +
                                             '<p class="text-sm text-gray-700">' + (doc.description || 'Документ') + '</p>' +
-                                            '<a href="' + doc.url + '" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">' +
-                                            'Открыть документ <i class="fas fa-external-link-alt ml-1"></i>' +
-                                            '</a>' +
+                                            '<p class="text-xs text-gray-500">' + (doc.filename || '') + '</p>' +
                                             '</div>' +
+                                            '</div>' +
+                                            '<div class="flex justify-center">' +
+                                            '<a href="' + doc.url + '" target="_blank" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">' +
+                                            '<i class="fas fa-download mr-1"></i> Скачать диплом' +
+                                            '</a>' +
                                             '</div>';
                                     }
 
@@ -307,7 +408,7 @@
                                     documentsContent.appendChild(docElement);
                                 });
                             } else {
-                                documentsContent.innerHTML = 
+                                documentsContent.innerHTML += 
                                     '<div class="text-center text-gray-500">' +
                                     '<p>Документы не найдены</p>' +
                                     '</div>';
@@ -423,6 +524,70 @@
                 .catch(error => {
                     console.error('Error declining cosmetologist:', error);
                     alert('Ошибка при отклонении заявки косметолога');
+                });
+            });
+
+            // Message cosmetologist
+            const messageBtns = document.querySelectorAll('.message-cosmetologist');
+            const messageModal = document.getElementById('message-modal');
+            const closeMessageModal = document.getElementById('close-message-modal');
+            const cancelMessage = document.getElementById('cancel-message');
+            const messageForm = document.getElementById('message-form');
+            const messageCosmetologistId = document.getElementById('message-cosmetologist-id');
+            const messageTitle = document.getElementById('message-title');
+
+            messageBtns.forEach(button => {
+                button.addEventListener('click', () => {
+                    const cosmetologistId = button.getAttribute('data-id');
+                    const cosmetologistName = button.getAttribute('data-name');
+
+                    messageCosmetologistId.value = cosmetologistId;
+                    messageTitle.textContent = 'Отправить сообщение: ' + cosmetologistName;
+
+                    messageModal.classList.remove('hidden');
+                });
+            });
+
+            // Close message modal
+            closeMessageModal.addEventListener('click', () => {
+                messageModal.classList.add('hidden');
+            });
+
+            cancelMessage.addEventListener('click', () => {
+                messageModal.classList.add('hidden');
+            });
+
+            // Submit message form
+            messageForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const cosmetologistId = messageCosmetologistId.value;
+                const message = document.getElementById('message-content').value.trim();
+
+                if (!message) {
+                    alert('Пожалуйста, введите сообщение');
+                    return;
+                }
+
+                fetch('/admin/messages/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'userId=' + encodeURIComponent(cosmetologistId) + '&message=' + encodeURIComponent(message)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Сообщение отправлено');
+                        messageModal.classList.add('hidden');
+                        document.getElementById('message-content').value = '';
+                    } else {
+                        alert('Ошибка при отправке сообщения');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending message:', error);
+                    alert('Ошибка при отправке сообщения');
                 });
             });
         });
