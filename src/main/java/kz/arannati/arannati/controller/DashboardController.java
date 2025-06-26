@@ -13,7 +13,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
 import java.util.List;
@@ -155,5 +160,79 @@ public class DashboardController {
         model.addAttribute("orders", orders);
 
         return "dashboard/orders";
+    }
+
+    /**
+     * Messages page for authenticated users
+     */
+    @GetMapping("/messages")
+    public String messages(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // If user is not authenticated, redirect to login
+        if (authentication == null || !authentication.isAuthenticated() || 
+            "anonymousUser".equals(authentication.getPrincipal())) {
+            return "redirect:/auth/login";
+        }
+
+        // Get authenticated user
+        String email = authentication.getName();
+        Optional<UserDTO> userOpt = userService.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            log.error("Authenticated user not found in database: {}", email);
+            return "redirect:/auth/login";
+        }
+
+        UserDTO user = userOpt.get();
+
+        // Add user data to model
+        model.addAttribute("user", user);
+
+        // Add messages to model
+        List<MessageDTO> receivedMessages = messageService.findByRecipientId(user.getId());
+        List<MessageDTO> sentMessages = messageService.findBySenderId(user.getId());
+        model.addAttribute("receivedMessages", receivedMessages);
+        model.addAttribute("sentMessages", sentMessages);
+
+        // Add unread message count
+        long unreadMessageCount = messageService.countUnreadByRecipientId(user.getId());
+        model.addAttribute("unreadMessageCount", unreadMessageCount);
+
+        return "dashboard/messages";
+    }
+
+    /**
+     * Mark message as read
+     */
+    @PostMapping("/messages/{id}/read")
+    @ResponseBody
+    public ResponseEntity<String> markMessageAsRead(@PathVariable Long id) {
+        boolean success = messageService.markAsRead(id);
+        if (success) {
+            return ResponseEntity.ok("Message marked as read");
+        } else {
+            return ResponseEntity.badRequest().body("Failed to mark message as read");
+        }
+    }
+
+    /**
+     * Send message to user
+     */
+    @PostMapping("/messages/send")
+    @ResponseBody
+    public ResponseEntity<String> sendMessage(@RequestParam Long userId, @RequestParam String message) {
+        // Get the authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Optional<UserDTO> userOpt = userService.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+
+        // Send the message
+        messageService.sendMessage(userOpt.get().getId(), userId, message);
+        return ResponseEntity.ok("Message sent successfully");
     }
 }

@@ -21,7 +21,7 @@
                     <div class="ml-3">
                         <p class="text-sm text-blue-700">
                             Добро пожаловать, <span class="font-semibold">${user.firstName} ${user.lastName}</span>!
-                            <#if user.isVerified>
+                            <#if user.verified>
                                 <span class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-xs">Верифицирован</span>
                             <#else>
                                 <span class="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-xs">Ожидает верификации</span>
@@ -31,7 +31,7 @@
                 </div>
             </div>
 
-            <#if !user.isVerified>
+            <#if !user.isVerified()>
                 <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
                     <div class="flex">
                         <div class="flex-shrink-0">
@@ -149,7 +149,7 @@
 
                 <div class="text-center py-4">
                     <div class="text-3xl font-bold text-gray-800 mb-2">
-                        <#if user.isVerified>
+                        <#if user.verified>
                             12
                         <#else>
                             <i class="fas fa-lock text-gray-400"></i>
@@ -159,7 +159,7 @@
                 </div>
 
                 <div class="mt-4 pt-4 border-t">
-                    <a href="/materials" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 <#if !user.isVerified>opacity-50 pointer-events-none</#if>">
+                    <a href="/materials" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 <#if !user.verified>opacity-50 pointer-events-none</#if>">
                         Просмотреть материалы
                         <i class="fas fa-chevron-right ml-1 text-xs"></i>
                     </a>
@@ -268,12 +268,12 @@
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold text-gray-800">Обучающие материалы</h2>
-                <a href="/materials" class="text-blue-600 hover:text-blue-800 text-sm <#if !user.isVerified>opacity-50 pointer-events-none</#if>">
+                <a href="/materials" class="text-blue-600 hover:text-blue-800 text-sm <#if !user.verified>opacity-50 pointer-events-none</#if>">
                     Все материалы
                 </a>
             </div>
 
-            <#if !user.isVerified>
+            <#if !user.verified>
                 <div class="text-center py-8">
                     <div class="text-4xl text-gray-300 mb-3">
                         <i class="fas fa-lock"></i>
@@ -334,12 +334,12 @@
         <div class="bg-white shadow-md rounded-lg p-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold text-gray-800">Специальные предложения</h2>
-                <a href="/special-offers" class="text-blue-600 hover:text-blue-800 text-sm <#if !user.isVerified>opacity-50 pointer-events-none</#if>">
+                <a href="/special-offers" class="text-blue-600 hover:text-blue-800 text-sm <#if !user.verified>opacity-50 pointer-events-none</#if>">
                     Все предложения
                 </a>
             </div>
 
-            <#if !user.isVerified>
+            <#if !user.verified>
                 <div class="text-center py-8">
                     <div class="text-4xl text-gray-300 mb-3">
                         <i class="fas fa-lock"></i>
