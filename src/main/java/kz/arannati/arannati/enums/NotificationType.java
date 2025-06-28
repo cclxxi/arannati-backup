@@ -1,0 +1,11 @@
+package kz.arannati.arannati.enums;
+
+public enum NotificationType {
+    ORDER_CREATED,
+    ORDER_STATUS_CHANGED,
+    PRODUCT_REVIEW_ADDED,
+    PRODUCT_PRICE_REDUCED,
+    COSMETOLOGIST_VERIFICATION,
+    SYSTEM_MESSAGE,
+    ADMIN_MESSAGE
+}
