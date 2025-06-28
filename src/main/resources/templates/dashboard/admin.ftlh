@@ -134,6 +134,27 @@
                     </div>
                 </a>
 
+                <a href="/messages" class="border rounded-lg p-4 hover:bg-gray-50 transition-colors flex items-center">
+                    <div class="bg-blue-100 p-2 rounded-full mr-3 relative">
+                        <i class="fas fa-comments text-blue-600"></i>
+                        <#if unreadMessageCount?? && unreadMessageCount gt 0>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                ${unreadMessageCount}
+                            </span>
+                        </#if>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-800">Сообщения</h3>
+                        <p class="text-xs text-gray-500">
+                            <#if unreadMessageCount?? && unreadMessageCount gt 0>
+                                ${unreadMessageCount} новых
+                            <#else>
+                                Общение с пользователями
+                            </#if>
+                        </p>
+                    </div>
+                </a>
+
                 <a href="/admin/cosmetologists/verify" class="border rounded-lg p-4 hover:bg-gray-50 transition-colors flex items-center">
                     <div class="bg-green-100 p-2 rounded-full mr-3 relative">
                         <i class="fas fa-check text-green-600"></i>
@@ -172,27 +193,6 @@
                     <div>
                         <h3 class="font-medium text-gray-800">Загрузить</h3>
                         <p class="text-xs text-gray-500">Добавить материалы</p>
-                    </div>
-                </a>
-
-                <a href="/admin/messages" class="border rounded-lg p-4 hover:bg-gray-50 transition-colors flex items-center">
-                    <div class="bg-red-100 p-2 rounded-full mr-3 relative">
-                        <i class="fas fa-envelope text-red-600"></i>
-                        <#if unreadMessageCount?? && unreadMessageCount gt 0>
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                                ${unreadMessageCount}
-                            </span>
-                        </#if>
-                    </div>
-                    <div>
-                        <h3 class="font-medium text-gray-800">Сообщения</h3>
-                        <p class="text-xs text-gray-500">
-                            <#if unreadMessageCount?? && unreadMessageCount gt 0>
-                                ${unreadMessageCount} новых
-                            <#else>
-                                Управление сообщениями
-                            </#if>
-                        </p>
                     </div>
                 </a>
             </div>
@@ -294,8 +294,8 @@
                 <div class="border rounded-lg p-4">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="font-medium text-gray-800">Сообщения</h3>
-                        <a href="/admin/messages" class="text-blue-600 hover:text-blue-800 text-sm">
-                            Все сообщения
+                        <a href="/messages" class="text-blue-600 hover:text-blue-800 text-sm">
+                            Перейти в чат
                         </a>
                     </div>
 
@@ -317,14 +317,14 @@
                             </div>
                         </div>
                         <div class="mt-4 pt-3 border-t">
-                            <a href="/admin/messages" class="inline-flex items-center justify-center w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm">
-                                <i class="fas fa-envelope mr-2"></i> Просмотреть сообщения
+                            <a href="/messages" class="inline-flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm">
+                                <i class="fas fa-comments mr-2"></i> Просмотреть сообщения
                             </a>
                         </div>
                     <#else>
                         <div class="py-6 text-center">
                             <div class="text-3xl text-gray-300 mb-2">
-                                <i class="fas fa-envelope"></i>
+                                <i class="fas fa-comments"></i>
                             </div>
                             <p class="text-gray-500">Нет новых сообщений</p>
                         </div>

@@ -42,6 +42,8 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").hasRole("ADMIN") // Only ADMIN can access admin pages
                 .requestMatchers("/materials/**").hasAnyRole("COSMETOLOGIST", "ADMIN") // Only COSMETOLOGIST and ADMIN can access materials
                 .requestMatchers("/special-offers/**").hasAnyRole("COSMETOLOGIST", "ADMIN") // Only COSMETOLOGIST and ADMIN can access special offers
+                        .requestMatchers("/messages/**").authenticated()
+                        .requestMatchers("/admin/messages/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

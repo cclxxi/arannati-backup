@@ -158,7 +158,7 @@ public class MessageServiceImpl implements MessageService {
         }
 
         User user = userService.convertToEntity(userDtoOpt.get());
-        return messageRepository.findByRecipientAndIsReadIsFalseOrderByCreatedAtDesc(user)
+        return messageRepository.findByRecipientAndReadIsFalseOrderByCreatedAtDesc(user)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -172,7 +172,7 @@ public class MessageServiceImpl implements MessageService {
         }
 
         User user = userService.convertToEntity(userDtoOpt.get());
-        return messageRepository.countByRecipientAndIsReadIsFalse(user);
+        return messageRepository.countByRecipientAndReadIsFalse(user);
     }
 
     @Override

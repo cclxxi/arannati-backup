@@ -1,8 +1,10 @@
 package kz.arannati.arannati.controller;
 
+import kz.arannati.arannati.dto.ChatDTO;
 import kz.arannati.arannati.dto.MessageDTO;
 import kz.arannati.arannati.dto.OrderDTO;
 import kz.arannati.arannati.dto.UserDTO;
+import kz.arannati.arannati.service.ChatService;
 import kz.arannati.arannati.service.MessageService;
 import kz.arannati.arannati.service.OrderService;
 import kz.arannati.arannati.service.UserService;
@@ -36,6 +38,7 @@ public class DashboardController {
     private final UserService userService;
     private final OrderService orderService;
     private final MessageService messageService;
+    private final ChatService chatService;
 
     /**
      * Main dashboard page for authenticated users
@@ -63,6 +66,7 @@ public class DashboardController {
 
         // Add user data to model
         model.addAttribute("user", user);
+        model.addAttribute("currentUser", user);  // Add currentUser as an alias for user
 
         // Add order history to model
         List<OrderDTO> orders = orderService.findByUserIdOrderByCreatedAtDesc(user.getId());
@@ -80,6 +84,10 @@ public class DashboardController {
         List<MessageDTO> sentMessages = messageService.findBySenderId(user.getId());
         model.addAttribute("receivedMessages", receivedMessages);
         model.addAttribute("sentMessages", sentMessages);
+
+        // Add chats for the messages widget
+        List<ChatDTO> chats = chatService.getUserChats(user.getId());
+        model.addAttribute("chats", chats);
 
         if ("ADMIN".equals(roleName)) {
             // Add users list for admin dashboard
