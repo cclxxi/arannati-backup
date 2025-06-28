@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service.impl;
 
+import kz.arannati.arannati.dto.OrderCreateDTO;
 import kz.arannati.arannati.dto.OrderDTO;
 import kz.arannati.arannati.entity.Order;
 import kz.arannati.arannati.entity.User;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,6 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderServiceImpl implements OrderService {
 
@@ -88,12 +91,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<OrderDTO> findByOrderNumber(String orderNumber) {
         return orderRepository.findByOrderNumber(orderNumber)
                 .map(this::convertToDto);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderDTO> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable) {
         Page<Order> orderPage = orderRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
         List<OrderDTO> orderDTOs = orderPage.getContent()
@@ -105,6 +110,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderDTO> findByUserIdOrderByCreatedAtDesc(Long userId) {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
@@ -113,6 +119,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderDTO> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable) {
         Page<Order> orderPage = orderRepository.findByStatusOrderByCreatedAtDesc(status, pageable);
         List<OrderDTO> orderDTOs = orderPage.getContent()
@@ -124,6 +131,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderDTO> findAllByOrderByCreatedAtDesc(Pageable pageable) {
         Page<Order> orderPage = orderRepository.findAllByOrderByCreatedAtDesc(pageable);
         List<OrderDTO> orderDTOs = orderPage.getContent()
@@ -135,6 +143,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderDTO> findOrdersWithFilters(String status, Long userId, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         Page<Order> orderPage = orderRepository.findOrdersWithFilters(status, userId, startDate, endDate, pageable);
         List<OrderDTO> orderDTOs = orderPage.getContent()
@@ -146,6 +155,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderDTO> searchOrders(String search, Pageable pageable) {
         Page<Order> orderPage = orderRepository.searchOrders(search, pageable);
         List<OrderDTO> orderDTOs = orderPage.getContent()
@@ -157,21 +167,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long countOrdersByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         return orderRepository.countOrdersByDateRange(startDate, endDate);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BigDecimal getTotalRevenueByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         return orderRepository.getTotalRevenueByDateRange(startDate, endDate);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long countByStatus(String status) {
         return orderRepository.countByStatus(status);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long countByUserId(Long userId) {
         return orderRepository.countByUserId(userId);
     }
@@ -192,6 +206,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<OrderDTO> findById(Long id) {
         return orderRepository.findById(id)
                 .map(this::convertToDto);
@@ -203,10 +218,56 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderDTO> findAll() {
         return orderRepository.findAll()
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderDTO createOrder(OrderCreateDTO orderCreateDTO, Long userId) {
+        // Implementation of createOrder method
+        // This is a placeholder implementation
+        return null;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderDTO> findAllOrderByCreatedAtDesc(Pageable pageable) {
+        // Implementation of findAllOrderByCreatedAtDesc method
+        // This is a placeholder implementation
+        return null;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderDTO> findByStatus(String status) {
+        // Implementation of findByStatus method
+        // This is a placeholder implementation
+        return null;
+    }
+
+    @Override
+    public OrderDTO updateOrderStatus(Long orderId, String status) {
+        // Implementation of updateOrderStatus method
+        // This is a placeholder implementation
+        return null;
+    }
+
+    @Override
+    public OrderDTO cancelOrder(Long orderId) {
+        // Implementation of cancelOrder method
+        // This is a placeholder implementation
+        return null;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderDTO> findRecentOrders(int limit) {
+        // Implementation of findRecentOrders method
+        // This is a placeholder implementation
+        return null;
     }
 }

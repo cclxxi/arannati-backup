@@ -5,6 +5,7 @@ import kz.arannati.arannati.entity.Notification;
 import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.enums.NotificationType;
 import kz.arannati.arannati.repository.NotificationRepository;
+import kz.arannati.arannati.repository.UserRepository;
 import kz.arannati.arannati.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
     @Override
     public NotificationDTO createNotification(Long userId, String title, String message, NotificationType type) {
@@ -31,8 +33,11 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDTO createNotification(Long userId, String title, String message, NotificationType type,
                                               Long relatedEntityId, String relatedEntityType) {
+        User user = new User();
+        user.setId(userId);
+
         Notification notification = Notification.builder()
-                .user(User.builder().id(userId).build())
+                .user(user)
                 .title(title)
                 .message(message)
                 .type(type)
@@ -48,6 +53,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<NotificationDTO> findByUserIdOrderByCreatedAtDesc(Long userId) {
         return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
@@ -56,14 +62,16 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<NotificationDTO> findUnreadByUserId(Long userId) {
-        return notificationRepository.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId)
+        return notificationRepository.findByUserIdAndReadIsFalseOrderByCreatedAtDesc(userId)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public void markAsRead(Long notificationId) {
         notificationRepository.findById(notificationId).ifPresent(notification -> {
             notification.setRead(true);
@@ -79,7 +87,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public long countUnreadByUserId(Long userId) {
-        return notificationRepository.countByUserIdAndIsReadFalse(userId);
+        return notificationRepository.countByUserIdAndReadIsFalse(userId);
     }
 
     @Override
@@ -99,27 +107,39 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void notifyNewOrder(Long orderId) {
         // Notify all admins about new order
-        createNotification(
-                null, // Will be handled to send to all admins
-                "Новый заказ",
-                "Поступил новый заказ №" + orderId,
-                NotificationType.ORDER_CREATED,
-                orderId,
-                "Order"
-        );
+        List<User> admins = userRepository.findByRoleNameAndActiveIsTrue("ADMIN");
+
+        for (User admin : admins) {
+            createNotification(
+                    admin.getId(),
+                    "Новый заказ",
+                    "Поступил новый заказ №" + orderId,
+                    NotificationType.ORDER_CREATED,
+                    orderId,
+                    "Order"
+            );
+        }
+
+        log.info("Notified {} admins about new order {}", admins.size(), orderId);
     }
 
     @Override
     public void notifyNewReview(Long productId, Long reviewId) {
         // Notify all admins about new review
-        createNotification(
-                null, // Will be handled to send to all admins
-                "Новый отзыв",
-                "Добавлен новый отзыв на товар",
-                NotificationType.PRODUCT_REVIEW_ADDED,
-                reviewId,
-                "Review"
-        );
+        List<User> admins = userRepository.findByRoleNameAndActiveIsTrue("ADMIN");
+
+        for (User admin : admins) {
+            createNotification(
+                    admin.getId(),
+                    "Новый отзыв",
+                    "Добавлен новый отзыв на товар",
+                    NotificationType.PRODUCT_REVIEW_ADDED,
+                    reviewId,
+                    "Review"
+            );
+        }
+
+        log.info("Notified {} admins about new review for product {}", admins.size(), productId);
     }
 
     private NotificationDTO convertToDto(Notification notification) {
@@ -131,7 +151,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .type(notification.getType())
                 .relatedEntityId(notification.getRelatedEntityId())
                 .relatedEntityType(notification.getRelatedEntityType())
-                .isRead(notification.isRead())
+                .read(notification.isRead())
                 .createdAt(notification.getCreatedAt())
                 .readAt(notification.getReadAt())
                 .build();
