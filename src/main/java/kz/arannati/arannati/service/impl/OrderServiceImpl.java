@@ -250,6 +250,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<OrderDTO> findByStatusWithPagination(String status, Pageable pageable) {
+        return findByStatusOrderByCreatedAtDesc(status, pageable);
+    }
+
+    @Override
     public OrderDTO updateOrderStatus(Long orderId, String status) {
         // Implementation of updateOrderStatus method
         // This is a placeholder implementation

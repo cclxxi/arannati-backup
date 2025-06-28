@@ -187,4 +187,13 @@ public class CategoryServiceImpl implements CategoryService {
 
         return new PageImpl<>(categoryDTOs, pageable, categoryPage.getTotalElements());
     }
+
+    @Override
+    public List<CategoryDTO> findAllActive() {
+        return categoryRepository.findAll()
+                .stream()
+                .filter(Category::isActive)
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 }

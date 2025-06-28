@@ -14,6 +14,8 @@ public interface ReviewService {
     List<ReviewDTO> findByProductIdAndActiveIsTrue(Long productId);
     Page<ReviewDTO> findByProductIdAndActiveIsTrue(Long productId, Pageable pageable);
     List<ReviewDTO> findByUserIdOrderByCreatedAtDesc(Long userId);
+    Page<ReviewDTO> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+    Page<ReviewDTO> findAllWithPagination(Pageable pageable);
     Double getAverageRatingByProductId(Long productId);
     Long getReviewCountByProductId(Long productId);
     void deleteById(Long id);

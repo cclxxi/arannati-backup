@@ -40,6 +40,8 @@ public interface CategoryService {
 
     Page<CategoryDTO> findAll(Pageable pageable);
 
+    List<CategoryDTO> findAllActive();
+
     CategoryDTO convertToDto(Category category);
 
     Category convertToEntity(CategoryDTO categoryDTO);

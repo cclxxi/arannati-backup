@@ -26,7 +26,7 @@ public class BrandServiceImpl implements BrandService {
         if (brand == null) {
             return null;
         }
-        
+
         return BrandDTO.builder()
                 .id(brand.getId())
                 .name(brand.getName())
@@ -40,13 +40,13 @@ public class BrandServiceImpl implements BrandService {
                 .updatedAt(brand.getUpdatedAt())
                 .build();
     }
-    
+
     @Override
     public Brand convertToEntity(BrandDTO brandDTO) {
         if (brandDTO == null) {
             return null;
         }
-        
+
         Brand brand = new Brand();
         brand.setId(brandDTO.getId());
         brand.setName(brandDTO.getName());
@@ -58,7 +58,7 @@ public class BrandServiceImpl implements BrandService {
         brand.setSortOrder(brandDTO.getSortOrder());
         brand.setCreatedAt(brandDTO.getCreatedAt());
         brand.setUpdatedAt(brandDTO.getUpdatedAt());
-        
+
         return brand;
     }
 
@@ -77,7 +77,7 @@ public class BrandServiceImpl implements BrandService {
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
-        
+
         return new PageImpl<>(brandDTOs, pageable, brandPage.getTotalElements());
     }
 
@@ -138,7 +138,12 @@ public class BrandServiceImpl implements BrandService {
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
-        
+
         return new PageImpl<>(brandDTOs, pageable, brandPage.getTotalElements());
+    }
+
+    @Override
+    public List<BrandDTO> findAllActive() {
+        return findByActiveIsTrueOrderBySortOrderAscNameAsc();
     }
 }

@@ -24,12 +24,12 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     /**
      * Find all unread notifications for a user ordered by creation date (newest first)
      */
-    List<Notification> findByUserIdAndReadIsFalseOrderByCreatedAtDesc(Long userId);
+    List<Notification> findByUserIdAndIsReadIsFalseOrderByCreatedAtDesc(Long userId);
 
     /**
      * Count unread notifications for a user
      */
-    long countByUserIdAndReadIsFalse(Long userId);
+    long countByUserIdAndIsReadIsFalse(Long userId);
 
     /**
      * Mark all notifications for a user as read

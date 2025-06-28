@@ -64,7 +64,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional(readOnly = true)
     public List<NotificationDTO> findUnreadByUserId(Long userId) {
-        return notificationRepository.findByUserIdAndReadIsFalseOrderByCreatedAtDesc(userId)
+        return notificationRepository.findByUserIdAndIsReadIsFalseOrderByCreatedAtDesc(userId)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -87,7 +87,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public long countUnreadByUserId(Long userId) {
-        return notificationRepository.countByUserIdAndReadIsFalse(userId);
+        return notificationRepository.countByUserIdAndIsReadIsFalse(userId);
     }
 
     @Override
