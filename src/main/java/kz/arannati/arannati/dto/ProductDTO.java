@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -44,9 +45,9 @@ public class ProductDTO {
     @DecimalMin(value = "0.0", inclusive = false, message = "Sale price must be greater than 0")
     private BigDecimal salePrice;
 
-    private boolean isProfessional;
+    private boolean professional;
 
-    private boolean isActive;
+    private boolean active;
 
     @NotNull(message = "Stock quantity is required")
     @Min(value = 0, message = "Stock quantity must be a positive number")
@@ -71,4 +72,27 @@ public class ProductDTO {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @DecimalMin(value = "0.0", inclusive = false, message = "Admin price must be greater than 0")
+    private BigDecimal adminPrice;
+
+    @Size(max = 100, message = "Manufacturer code cannot exceed 100 characters")
+    private String manufacturerCode;
+
+    // Relationships
+    private String categoryName;
+    private String brandName;
+
+    // Additional info
+    private List<ProductImageDTO> images;
+    private List<ReviewDTO> reviews;
+    private Double averageRating;
+    private Integer reviewCount;
+    private boolean inWishlist;
+    private boolean inCart;
+
+    // Calculated fields
+    private BigDecimal effectivePrice;
+    private BigDecimal discountPercentage;
+    private boolean hasDiscount;
 }
