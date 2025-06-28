@@ -50,4 +50,11 @@ public interface OrderService {
     OrderDTO convertToDto(Order order);
 
     Order convertToEntity(OrderDTO orderDTO);
+
+    OrderDTO createOrder(OrderCreateDTO orderCreateDTO, Long userId);
+    Page<OrderDTO> findAllOrderByCreatedAtDesc(Pageable pageable);
+    List<OrderDTO> findByStatus(String status);
+    OrderDTO updateOrderStatus(Long orderId, String status);
+    OrderDTO cancelOrder(Long orderId);
+    List<OrderDTO> findRecentOrders(int limit);
 }

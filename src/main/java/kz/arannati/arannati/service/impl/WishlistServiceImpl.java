@@ -12,12 +12,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class WishlistServiceImpl implements WishlistService {
 
@@ -61,6 +63,7 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<WishlistDTO> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable) {
         Page<Wishlist> wishlistPage = wishlistRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
         List<WishlistDTO> wishlistDTOs = wishlistPage.getContent()
@@ -72,6 +75,7 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<WishlistDTO> findByUserIdOrderByCreatedAtDesc(Long userId) {
         return wishlistRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
@@ -80,12 +84,14 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<WishlistDTO> findByUserIdAndProductId(Long userId, Long productId) {
         return wishlistRepository.findByUserIdAndProductId(userId, productId)
                 .map(this::convertToDto);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<WishlistDTO> findActiveWishlistItemsByUserId(Long userId) {
         return wishlistRepository.findActiveWishlistItemsByUserId(userId)
                 .stream()
@@ -94,6 +100,7 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByUserIdAndProductId(Long userId, Long productId) {
         return wishlistRepository.existsByUserIdAndProductId(userId, productId);
     }
@@ -104,11 +111,13 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long countByUserId(Long userId) {
         return wishlistRepository.countByUserId(userId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Object[]> findMostWishedProducts(Pageable pageable) {
         return wishlistRepository.findMostWishedProducts(pageable);
     }
@@ -136,6 +145,7 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<WishlistDTO> findById(Long id) {
         return wishlistRepository.findById(id)
                 .map(this::convertToDto);
@@ -147,6 +157,7 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<WishlistDTO> findAll() {
         return wishlistRepository.findAll()
                 .stream()
