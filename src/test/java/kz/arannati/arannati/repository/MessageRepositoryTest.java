@@ -1,6 +1,7 @@
 package kz.arannati.arannati.repository;
 
 import kz.arannati.arannati.entity.Message;
+import kz.arannati.arannati.entity.Role;
 import kz.arannati.arannati.entity.User;
 import kz.arannati.arannati.enums.MessageType;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@ActiveProfiles("test")
 public class MessageRepositoryTest {
 
     @Autowired
@@ -33,12 +36,20 @@ public class MessageRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        // Create role for test users
+        Role userRole = new Role();
+        userRole.setName("USER");
+        entityManager.persist(userRole);
+
         // Create test users
         sender = new User();
         sender.setEmail("sender@example.com");
         sender.setFirstName("Sender");
         sender.setLastName("User");
         sender.setPassword("password");
+        sender.setRole(userRole);
+        sender.setVerified(false);
+        sender.setActive(true);
         entityManager.persist(sender);
 
         recipient = new User();
@@ -46,6 +57,9 @@ public class MessageRepositoryTest {
         recipient.setFirstName("Recipient");
         recipient.setLastName("User");
         recipient.setPassword("password");
+        recipient.setRole(userRole);
+        recipient.setVerified(false);
+        recipient.setActive(true);
         entityManager.persist(recipient);
 
         // Create test messages
