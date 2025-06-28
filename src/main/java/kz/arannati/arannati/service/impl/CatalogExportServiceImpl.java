@@ -11,9 +11,17 @@ import kz.arannati.arannati.dto.UserDTO;
 import kz.arannati.arannati.service.CatalogExportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.itextpdf.text.Document;
 import java.io.ByteArrayOutputStream;
@@ -27,10 +35,12 @@ import java.util.Locale;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@Transactional
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CatalogExportServiceImpl implements CatalogExportService {
 
     @Override
+    @Transactional(readOnly = true)
     public ByteArrayOutputStream exportToPdf(List<ProductDTO> products, String title, UserDTO user) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -112,21 +122,22 @@ public class CatalogExportServiceImpl implements CatalogExportService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ByteArrayOutputStream exportToExcel(List<ProductDTO> products, String title) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        try (Workbook workbook = new XSSFWorkbook()) {
+        try (Workbook workbook = new HSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Каталог");
 
             // Create styles
             CellStyle titleStyle = workbook.createCellStyle();
-            Font titleFont = workbook.createFont();
+            org.apache.poi.ss.usermodel.Font titleFont = workbook.createFont();
             titleFont.setBold(true);
             titleFont.setFontHeightInPoints((short) 16);
             titleStyle.setFont(titleFont);
 
             CellStyle headerStyle = workbook.createCellStyle();
-            Font headerFont = workbook.createFont();
+            org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
             headerFont.setBold(true);
             headerStyle.setFont(headerFont);
             headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
