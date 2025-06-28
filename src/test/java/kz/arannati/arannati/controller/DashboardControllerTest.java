@@ -8,6 +8,7 @@ import kz.arannati.arannati.service.ChatService;
 import kz.arannati.arannati.service.MessageService;
 import kz.arannati.arannati.service.OrderService;
 import kz.arannati.arannati.service.UserService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -107,9 +111,28 @@ public class DashboardControllerTest {
         chats = Arrays.asList(chatDTO);
     }
 
+    @AfterEach
+    void tearDown() {
+        // Clear security context after each test
+        SecurityContextHolder.clearContext();
+    }
+
+    private void authenticateUser(String username) {
+        // Create authentication token
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                username,
+                null,
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+        // Set authentication in security context
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
     @Test
-    @WithMockUser(username = "user@example.com")
     void dashboard_shouldShowDashboardWithMessages_whenUserIsAuthenticated() throws Exception {
+        // Set up authentication
+        authenticateUser("user@example.com");
+
         // Given
         when(userService.findByEmail("user@example.com")).thenReturn(Optional.of(userDTO));
         when(orderService.findByUserIdOrderByCreatedAtDesc(1L)).thenReturn(Collections.emptyList());
@@ -129,8 +152,10 @@ public class DashboardControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user@example.com")
     void messages_shouldShowMessagesPage_whenUserIsAuthenticated() throws Exception {
+        // Set up authentication
+        authenticateUser("user@example.com");
+
         // Given
         when(userService.findByEmail("user@example.com")).thenReturn(Optional.of(userDTO));
         when(messageService.findByRecipientId(1L)).thenReturn(messages);
@@ -147,8 +172,10 @@ public class DashboardControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user@example.com")
     void markMessageAsRead_shouldMarkMessageAsRead_whenUserIsAuthenticated() throws Exception {
+        // Set up authentication
+        authenticateUser("user@example.com");
+
         // Given
         when(messageService.markAsRead(1L)).thenReturn(true);
 
@@ -162,8 +189,10 @@ public class DashboardControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user@example.com")
     void markMessageAsRead_shouldReturnError_whenMessageDoesNotExist() throws Exception {
+        // Set up authentication
+        authenticateUser("user@example.com");
+
         // Given
         when(messageService.markAsRead(1L)).thenReturn(false);
 
@@ -177,8 +206,10 @@ public class DashboardControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user@example.com")
     void sendMessage_shouldSendMessage_whenUserIsAuthenticated() throws Exception {
+        // Set up authentication
+        authenticateUser("user@example.com");
+
         // Given
         when(userService.findByEmail("user@example.com")).thenReturn(Optional.of(userDTO));
         when(messageService.sendMessage(1L, 2L, "Test message")).thenReturn(messageDTO);
@@ -195,8 +226,10 @@ public class DashboardControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user@example.com")
     void sendMessage_shouldReturnError_whenUserDoesNotExist() throws Exception {
+        // Set up authentication
+        authenticateUser("user@example.com");
+
         // Given
         when(userService.findByEmail("user@example.com")).thenReturn(Optional.empty());
 
