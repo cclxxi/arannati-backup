@@ -32,6 +32,8 @@ public interface BrandService {
 
     Page<BrandDTO> findAll(Pageable pageable);
 
+    List<BrandDTO> findAllActive();
+
     BrandDTO convertToDto(Brand brand);
 
     Brand convertToEntity(BrandDTO brandDTO);

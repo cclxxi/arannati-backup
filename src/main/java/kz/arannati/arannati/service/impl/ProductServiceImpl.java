@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service.impl;
 
+import kz.arannati.arannati.dto.CatalogFilterDTO;
 import kz.arannati.arannati.dto.ProductDTO;
 import kz.arannati.arannati.entity.Brand;
 import kz.arannati.arannati.entity.Category;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -39,8 +41,8 @@ public class ProductServiceImpl implements ProductService {
                 .regularPrice(product.getRegularPrice())
                 .cosmetologistPrice(product.getCosmetologistPrice())
                 .salePrice(product.getSalePrice())
-                .isProfessional(product.isProfessional())
-                .isActive(product.isActive())
+                .professional(product.isProfessional())
+                .active(product.isActive())
                 .stockQuantity(product.getStockQuantity())
                 .weight(product.getWeight())
                 .dimensions(product.getDimensions())
@@ -283,5 +285,98 @@ public class ProductServiceImpl implements ProductService {
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public long countProductsOnSale() {
+        // Using the existing findProductsOnSale method with a small page size to count
+        Page<Product> productPage = productRepository.findProductsOnSale(PageRequest.of(0, 1));
+        return productPage.getTotalElements();
+    }
+
+    @Override
+    public List<ProductDTO> findAllActiveProducts() {
+        // Using a large page size to get all active products
+        Page<Product> productPage = productRepository.findByActiveIsTrueOrderBySortOrderAscNameAsc(
+                PageRequest.of(0, Integer.MAX_VALUE));
+        return productPage.getContent()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public long countLowStockProducts(int threshold) {
+        // Count products with stock quantity below the threshold
+        return productRepository.findAll().stream()
+                .filter(product -> product.isActive() && product.getStockQuantity() != null && product.getStockQuantity() <= threshold)
+                .count();
+    }
+
+    @Override
+    public Page<ProductDTO> findAllWithPagination(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAll(pageable);
+        List<ProductDTO> productDTOs = productPage.getContent()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(productDTOs, pageable, productPage.getTotalElements());
+    }
+
+    @Override
+    public List<ProductDTO> findByBrandIdAndActiveIsTrue(Long brandId) {
+        // Using a large page size to get all products for the brand
+        Page<Product> productPage = productRepository.findByBrandIdAndActiveIsTrueOrderBySortOrderAscNameAsc(
+                brandId, PageRequest.of(0, Integer.MAX_VALUE));
+        return productPage.getContent()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDTO> findProductsOnSale() {
+        // Using a large page size to get all products on sale
+        Page<Product> productPage = productRepository.findProductsOnSale(
+                PageRequest.of(0, Integer.MAX_VALUE));
+        return productPage.getContent()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDTO> findProductsWithCustomFilters(CatalogFilterDTO filter) {
+        // Create a pageable with a large size to get all products
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+
+        // Use existing methods based on filter criteria
+        Page<ProductDTO> productPage;
+
+        if (filter.getSearch() != null && !filter.getSearch().isEmpty()) {
+            productPage = searchProducts(filter.getSearch(), pageable);
+        } else if ((filter.getCategoryIds() != null && !filter.getCategoryIds().isEmpty()) || 
+                  (filter.getBrandIds() != null && !filter.getBrandIds().isEmpty()) ||
+                  filter.getOnSale() != null) {
+
+            // Get first category and brand ID if lists are not empty
+            Long categoryId = (filter.getCategoryIds() != null && !filter.getCategoryIds().isEmpty()) ? 
+                    filter.getCategoryIds().get(0) : null;
+            Long brandId = (filter.getBrandIds() != null && !filter.getBrandIds().isEmpty()) ? 
+                    filter.getBrandIds().get(0) : null;
+
+            // If onSale is true, get products on sale
+            if (Boolean.TRUE.equals(filter.getOnSale())) {
+                return findProductsOnSale();
+            }
+
+            productPage = findProductsWithFilters(categoryId, brandId, null, 
+                    filter.getMinPrice(), filter.getMaxPrice(), pageable);
+        } else {
+            productPage = findByActiveIsTrueOrderBySortOrderAscNameAsc(pageable);
+        }
+
+        return productPage.getContent();
     }
 }

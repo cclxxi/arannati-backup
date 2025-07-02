@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.CatalogFilterDTO;
 import kz.arannati.arannati.dto.ProductDTO;
 import kz.arannati.arannati.entity.Product;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,20 @@ public interface ProductService {
     Page<ProductDTO> findNewProducts(Pageable pageable);
 
     Page<ProductDTO> findProductsOnSale(Pageable pageable);
+
+    long countProductsOnSale();
+
+    List<ProductDTO> findAllActiveProducts();
+
+    long countLowStockProducts(int threshold);
+
+    Page<ProductDTO> findAllWithPagination(Pageable pageable);
+
+    List<ProductDTO> findByBrandIdAndActiveIsTrue(Long brandId);
+
+    List<ProductDTO> findProductsOnSale();
+
+    List<ProductDTO> findProductsWithCustomFilters(CatalogFilterDTO filter);
 
     List<ProductDTO> findTop8ByActiveIsTrueOrderByCreatedAtDesc();
 

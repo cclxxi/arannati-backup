@@ -1,5 +1,6 @@
 package kz.arannati.arannati.service;
 
+import kz.arannati.arannati.dto.OrderCreateDTO;
 import kz.arannati.arannati.dto.OrderDTO;
 import kz.arannati.arannati.entity.Order;
 import org.springframework.data.domain.Page;
@@ -50,4 +51,12 @@ public interface OrderService {
     OrderDTO convertToDto(Order order);
 
     Order convertToEntity(OrderDTO orderDTO);
+
+    OrderDTO createOrder(OrderCreateDTO orderCreateDTO, Long userId);
+    Page<OrderDTO> findAllOrderByCreatedAtDesc(Pageable pageable);
+    List<OrderDTO> findByStatus(String status);
+    Page<OrderDTO> findByStatusWithPagination(String status, Pageable pageable);
+    OrderDTO updateOrderStatus(Long orderId, String status);
+    OrderDTO cancelOrder(Long orderId);
+    List<OrderDTO> findRecentOrders(int limit);
 }
