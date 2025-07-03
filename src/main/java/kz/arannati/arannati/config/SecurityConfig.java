@@ -28,11 +28,25 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/admin-creation") // Отключаем CSRF для маршрута создания админа
+                        .ignoringRequestMatchers("/api/**") // Disable CSRF for all API endpoints
                 )
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/admin-creation").permitAll() // Temporary endpoint for admin creation
+                .requestMatchers("/api/catalog/**").permitAll() // Allow access to catalog API for all users
+                .requestMatchers("/api/cart/count").permitAll() // Allow access to cart count for all users
+                .requestMatchers("/api/cart/**").authenticated() // Require authentication for cart operations
+                .requestMatchers("/api/wishlist/check/**").permitAll() // Allow access to wishlist check for all users
+                .requestMatchers("/api/wishlist/**").authenticated() // Require authentication for wishlist operations
+                .requestMatchers("/api/messages/unread-count").authenticated() // Require authentication for unread message count
+                .requestMatchers("/api/messages/**").authenticated() // Require authentication for message operations
+                .requestMatchers("/api/dashboard").permitAll() // Allow access to dashboard API for all users (guest view)
+                .requestMatchers("/api/dashboard/**").authenticated() // Require authentication for dashboard operations
+                .requestMatchers("/api/orders/shipping").permitAll() // Allow access to shipping calculation for all users
+                .requestMatchers("/api/orders/**").authenticated() // Require authentication for order operations
+                .requestMatchers("/api/materials/**").hasAnyRole("COSMETOLOGIST", "ADMIN") // Only COSMETOLOGIST and ADMIN can access material API endpoints
+                .requestMatchers("/api/cosmetologist/**").hasAnyRole("COSMETOLOGIST", "ADMIN") // Only COSMETOLOGIST and ADMIN can access cosmetologist API endpoints
+                .requestMatchers("/api/admin/**").hasRole("ADMIN") // Only ADMIN can access admin API endpoints
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/static/**").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
