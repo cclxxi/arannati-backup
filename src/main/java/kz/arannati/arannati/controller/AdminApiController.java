@@ -1,4 +1,4 @@
-package kz.arannati.arannati.controller.api;
+package kz.arannati.arannati.controller;
 
 import kz.arannati.arannati.dto.*;
 import kz.arannati.arannati.enums.NotificationType;
@@ -11,14 +11,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * REST API controller for admin functionality

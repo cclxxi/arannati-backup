@@ -1,4 +1,4 @@
-package kz.arannati.arannati.controller.api;
+package kz.arannati.arannati.controller;
 
 import kz.arannati.arannati.entity.Material;
 import kz.arannati.arannati.service.FileStorageService;
