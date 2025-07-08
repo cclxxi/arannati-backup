@@ -22,10 +22,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRoleNameAndActiveIsTrue(String roleName);
 
-    @Query("SELECT u FROM User u WHERE u.role.name = 'COSMETOLOGIST' AND u.isVerified = true AND u.active = true")
+    @Query("SELECT u FROM User u WHERE u.role.name = 'COSMETOLOGIST' AND u.verified = true AND u.active = true")
     List<User> findVerifiedCosmetologists();
 
-    @Query("SELECT u FROM User u WHERE u.role.name = 'COSMETOLOGIST' AND u.isVerified = false AND u.active = true")
+    @Query("SELECT u FROM User u WHERE u.role.name = 'COSMETOLOGIST' AND u.verified = false AND u.active = true")
     Page<User> findUnverifiedCosmetologists(Pageable pageable);
 
     @Query("SELECT u FROM User u WHERE " +

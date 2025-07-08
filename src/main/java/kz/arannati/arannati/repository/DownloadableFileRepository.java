@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,8 +15,10 @@ import java.util.List;
 @Repository
 public interface DownloadableFileRepository extends JpaRepository<DownloadableFile, Long> {
 
+    @RestResource(path = "by-access-level-list", rel = "by-access-level-list")
     Page<DownloadableFile> findByAccessLevelAndActiveIsTrueOrderBySortOrderAscTitleAsc(String accessLevel, Pageable pageable);
 
+    @RestResource(path = "by-access-level-page", rel = "by-access-level-page")
     List<DownloadableFile> findByAccessLevelAndActiveIsTrueOrderBySortOrderAscTitleAsc(String accessLevel);
 
     Page<DownloadableFile> findByCategoryAndActiveIsTrueOrderBySortOrderAscTitleAsc(String category, Pageable pageable);
