@@ -40,7 +40,7 @@ public class Notification {
     private String relatedEntityType;
 
     @Column(name = "is_read", nullable = false)
-    private boolean isRead = false;
+    private boolean read = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

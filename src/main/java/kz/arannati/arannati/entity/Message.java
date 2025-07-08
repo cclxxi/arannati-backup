@@ -49,13 +49,13 @@ public class Message {
     private MessageType messageType = MessageType.DIRECT; // Тип сообщения
 
     @Column(name = "is_broadcast", nullable = false)
-    private boolean isBroadcast = false; // Является ли сообщение рассылкой для админов
+    private boolean broadcast = false; // Является ли сообщение рассылкой для админов
 
     @Column(name = "broadcast_responded_by")
     private Long broadcastRespondedBy; // ID админа, который ответил на рассылку
 
     @Column(name = "is_system_message", nullable = false)
-    private boolean isSystemMessage = false; // Системное сообщение (например, причина отклонения)
+    private boolean systemMessage = false; // Системное сообщение (например, причина отклонения)
 
     @Column(name = "original_message_id")
     private Long originalMessageId; // Ссылка на оригинальное сообщение (для ответов)
