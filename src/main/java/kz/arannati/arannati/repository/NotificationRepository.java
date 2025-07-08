@@ -24,18 +24,18 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     /**
      * Find all unread notifications for a user ordered by creation date (newest first)
      */
-    List<Notification> findByUserIdAndIsReadIsFalseOrderByCreatedAtDesc(Long userId);
+    List<Notification> findByUserIdAndReadIsFalseOrderByCreatedAtDesc(Long userId);
 
     /**
      * Count unread notifications for a user
      */
-    long countByUserIdAndIsReadIsFalse(Long userId);
+    long countByUserIdAndReadIsFalse(Long userId);
 
     /**
      * Mark all notifications for a user as read
      */
     @Modifying
     @Transactional
-    @Query("UPDATE Notification n SET n.isRead = true, n.readAt = CURRENT_TIMESTAMP WHERE n.user.id = :userId AND n.isRead = false")
+    @Query("UPDATE Notification n SET n.read = true, n.readAt = CURRENT_TIMESTAMP WHERE n.user.id = :userId AND n.read = false")
     void markAllAsReadByUserId(@Param("userId") Long userId);
 }

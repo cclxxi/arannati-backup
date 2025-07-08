@@ -1,11 +1,10 @@
-package kz.arannati.arannati.controller.api;
+package kz.arannati.arannati.controller;
 
 import kz.arannati.arannati.dto.UserDTO;
 import kz.arannati.arannati.dto.auth.LoginRequest;
 import kz.arannati.arannati.dto.auth.UserRegistrationRequest;
 import kz.arannati.arannati.dto.auth.CosmetologistRegistrationRequest;
 import kz.arannati.arannati.service.UserService;
-import kz.arannati.arannati.service.CosmetologistVerificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

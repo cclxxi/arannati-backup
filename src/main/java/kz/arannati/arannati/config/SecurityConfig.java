@@ -47,36 +47,14 @@ public class SecurityConfig {
                 .requestMatchers("/api/materials/**").hasAnyRole("COSMETOLOGIST", "ADMIN") // Only COSMETOLOGIST and ADMIN can access material API endpoints
                 .requestMatchers("/api/cosmetologist/**").hasAnyRole("COSMETOLOGIST", "ADMIN") // Only COSMETOLOGIST and ADMIN can access cosmetologist API endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN") // Only ADMIN can access admin API endpoints
-                .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/static/**").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/error").permitAll()
-                .requestMatchers("/").permitAll() // Allow access to catalog (root page) for all users
-                .requestMatchers("/product/**").permitAll() // Allow access to product details for all users
-                .requestMatchers("/dashboard").permitAll() // Allow access to main dashboard for all users
-                .requestMatchers("/dashboard/admin/**").hasRole("ADMIN") // Only ADMIN can access admin dashboard
-                .requestMatchers("/admin/**").hasRole("ADMIN") // Only ADMIN can access admin pages
-                .requestMatchers("/materials/**").hasAnyRole("COSMETOLOGIST", "ADMIN") // Only COSMETOLOGIST and ADMIN can access materials
-                .requestMatchers("/special-offers/**").hasAnyRole("COSMETOLOGIST", "ADMIN") // Only COSMETOLOGIST and ADMIN can access special offers
-                        .requestMatchers("/messages/**").authenticated()
-                        .requestMatchers("/admin/messages/**").hasRole("ADMIN")
+                // Swagger UI endpoints - ensure all related paths are permitted
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form
-                .loginPage("/auth/login")
-                .loginProcessingUrl("/auth/login")
-                .usernameParameter("email")
-                .defaultSuccessUrl("/dashboard", true)
-                .failureUrl("/auth/login?error")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/auth/logout")
-                .logoutSuccessUrl("/auth/login?logout")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .permitAll()
-            );
+            .httpBasic(httpBasic -> {}); // Use HTTP Basic authentication for API endpoints
 
         // We no longer explicitly set an AuthenticationProvider
         // Spring Security will automatically use our AuthUserDetailsService

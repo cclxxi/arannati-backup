@@ -36,7 +36,7 @@ public class User {
     private Role role;
 
     @Column(name = "is_verified", nullable = false)
-    private boolean isVerified;
+    private boolean verified;
 
     @Column(name = "is_active", nullable = false)
     private boolean active;

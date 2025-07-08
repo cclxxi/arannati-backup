@@ -1,11 +1,10 @@
-package kz.arannati.arannati.controller.api;
+package kz.arannati.arannati.controller;
 
 import kz.arannati.arannati.dto.*;
 import kz.arannati.arannati.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

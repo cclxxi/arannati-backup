@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +17,10 @@ import java.util.Optional;
 @Repository
 public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
 
+    @RestResource(path = "by-user-page", rel = "by-user-page")
     Page<Wishlist> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
+    @RestResource(path = "by-user-list", rel = "by-user-list")
     List<Wishlist> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     Optional<Wishlist> findByUserIdAndProductId(Long userId, Long productId);

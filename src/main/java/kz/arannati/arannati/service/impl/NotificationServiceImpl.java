@@ -43,7 +43,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .type(type)
                 .relatedEntityId(relatedEntityId)
                 .relatedEntityType(relatedEntityType)
-                .isRead(false)
+                .read(false)
                 .build();
 
         Notification saved = notificationRepository.save(notification);
@@ -64,7 +64,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional(readOnly = true)
     public List<NotificationDTO> findUnreadByUserId(Long userId) {
-        return notificationRepository.findByUserIdAndIsReadIsFalseOrderByCreatedAtDesc(userId)
+        return notificationRepository.findByUserIdAndReadIsFalseOrderByCreatedAtDesc(userId)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -87,7 +87,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public long countUnreadByUserId(Long userId) {
-        return notificationRepository.countByUserIdAndIsReadIsFalse(userId);
+        return notificationRepository.countByUserIdAndReadIsFalse(userId);
     }
 
     @Override

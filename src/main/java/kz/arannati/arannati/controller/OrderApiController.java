@@ -1,4 +1,4 @@
-package kz.arannati.arannati.controller.api;
+package kz.arannati.arannati.controller;
 
 import kz.arannati.arannati.dto.*;
 import kz.arannati.arannati.service.*;

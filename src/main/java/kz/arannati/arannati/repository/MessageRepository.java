@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -15,13 +16,16 @@ import java.util.List;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    // Существующие методы
+    @RestResource(path = "by-sender")
     List<Message> findBySenderOrderByCreatedAtDesc(User sender);
 
+    @RestResource(path = "by-recipient-list")
     List<Message> findByRecipientOrderByCreatedAtDesc(User recipient);
 
+    @RestResource(path = "by-sender-paged")
     Page<Message> findBySenderOrderByCreatedAtDesc(User sender, Pageable pageable);
 
+    @RestResource(path = "by-recipient-paged")
     Page<Message> findByRecipientOrderByCreatedAtDesc(User recipient, Pageable pageable);
 
     List<Message> findByRecipientAndReadIsFalseOrderByCreatedAtDesc(User recipient);
@@ -62,14 +66,14 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     /**
      * Получает активные рассылки (сообщения поддержки, на которые еще не ответили)
      */
-    @Query("SELECT m FROM Message m WHERE m.isBroadcast = true AND m.broadcastRespondedBy IS NULL ORDER BY m.createdAt DESC")
+    @Query("SELECT m FROM Message m WHERE m.broadcast = true AND m.broadcastRespondedBy IS NULL ORDER BY m.createdAt DESC")
     List<Message> findActiveBroadcasts();
 
     /**
      * Находит связанные рассылки по отправителю, контенту и времени создания
      */
     @Query("SELECT m FROM Message m WHERE m.sender.id = :senderId AND m.content = :content " +
-            "AND m.isBroadcast = true AND m.createdAt BETWEEN :startTime AND :endTime")
+            "AND m.broadcast = true AND m.createdAt BETWEEN :startTime AND :endTime")
     List<Message> findRelatedBroadcasts(@Param("senderId") Long senderId,
                                         @Param("content") String content,
                                         @Param("startTime") LocalDateTime startTime,
@@ -81,7 +85,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query("SELECT m FROM Message m WHERE m.id IN (" +
             "SELECT MAX(m2.id) FROM Message m2 WHERE " +
             "(m2.sender.id = :userId OR m2.recipient.id = :userId) " +
-            "AND (m2.isBroadcast = false OR m2.broadcastRespondedBy IS NOT NULL) " +
+            "AND (m2.broadcast = false OR m2.broadcastRespondedBy IS NOT NULL) " +
             "GROUP BY m2.chatId)")
     List<Message> findLastMessagesInUserChats(@Param("userId") Long userId);
 
@@ -95,6 +99,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
      * Получает сообщения поддержки от пользователя, на которые еще не ответили
      */
     @Query("SELECT m FROM Message m WHERE m.sender.id = :userId AND m.messageType = 'SUPPORT_REQUEST' " +
-            "AND m.isBroadcast = true AND m.broadcastRespondedBy IS NULL")
+            "AND m.broadcast = true AND m.broadcastRespondedBy IS NULL")
     List<Message> findUnansweredSupportRequests(@Param("userId") Long userId);
 }

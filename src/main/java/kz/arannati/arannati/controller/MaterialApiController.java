@@ -8,25 +8,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
- * Controller for handling material downloads
+ * REST API controller for material functionality
  */
 @Slf4j
-@Controller
-@RequestMapping("/materials")
+@RestController
+@RequestMapping("/api/materials")
 @RequiredArgsConstructor
-public class MaterialController {
+public class MaterialApiController extends BaseApiController {
 
     private static final String MATERIALS_DIRECTORY = "materials";
 
@@ -34,18 +33,52 @@ public class MaterialController {
     private final FileStorageService fileStorageService;
 
     /**
+     * Get material details by ID
+     * @param id Material ID
+     * @return Material details
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> getMaterial(@PathVariable Long id) {
+        try {
+            Optional<Material> materialOpt = materialService.findById(id);
+            if (materialOpt.isEmpty()) {
+                return errorResponse("Material not found", HttpStatus.NOT_FOUND);
+            }
+
+            Material material = materialOpt.get();
+
+            // Create response data
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", material.getId());
+            data.put("title", material.getTitle());
+            data.put("description", material.getDescription());
+            data.put("fileName", material.getFileName());
+            data.put("fileType", material.getFileType());
+            data.put("fileSize", material.getFileSize());
+            data.put("filePath", material.getFilePath());
+            data.put("uploadDate", material.getUploadDate());
+            data.put("uploadedBy", material.getUploadedBy());
+            data.put("downloadUrl", "/api/materials/download/" + material.getId());
+
+            return successResponse(data);
+        } catch (Exception e) {
+            log.error("Error getting material: {}", e.getMessage(), e);
+            return errorResponse("Failed to get material: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * Download a material file
      * @param id The ID of the material to download
      * @return The file as a response entity
      */
     @GetMapping("/download/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'COSMETOLOGIST')")
-    public ResponseEntity<Resource> downloadMaterial(@PathVariable Long id) {
+    public ResponseEntity<?> downloadMaterial(@PathVariable Long id) {
         try {
             // Get the material
             Optional<Material> materialOpt = materialService.findById(id);
             if (materialOpt.isEmpty()) {
-                return ResponseEntity.notFound().build();
+                return errorResponse("Material not found", HttpStatus.NOT_FOUND);
             }
 
             Material material = materialOpt.get();
@@ -56,7 +89,7 @@ public class MaterialController {
 
             if (!resource.exists()) {
                 log.error("File not found: {}", filePath);
-                return ResponseEntity.notFound().build();
+                return errorResponse("File not found", HttpStatus.NOT_FOUND);
             }
 
             // Determine content type
@@ -72,7 +105,7 @@ public class MaterialController {
                     .body(resource);
         } catch (Exception e) {
             log.error("Error downloading material: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
+            return errorResponse("Failed to download material: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
