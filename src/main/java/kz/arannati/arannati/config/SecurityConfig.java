@@ -50,6 +50,8 @@ public class SecurityConfig {
                 .requestMatchers("/static/**").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/error").permitAll()
+                // Swagger UI endpoints - ensure all related paths are permitted
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
             )
             .httpBasic(httpBasic -> {}); // Use HTTP Basic authentication for API endpoints

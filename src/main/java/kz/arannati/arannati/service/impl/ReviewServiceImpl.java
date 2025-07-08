@@ -45,7 +45,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<ReviewDTO> findByProductIdAndActiveIsTrue(Long productId) {
-        return reviewRepository.findByProductIdAndIsActiveIsTrue(productId)
+        return reviewRepository.findByProductIdAndActiveIsTrue(productId)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -53,7 +53,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Page<ReviewDTO> findByProductIdAndActiveIsTrue(Long productId, Pageable pageable) {
-        Page<Review> reviewPage = reviewRepository.findByProductIdAndIsActiveIsTrue(productId, pageable);
+        Page<Review> reviewPage = reviewRepository.findByProductIdAndActiveIsTrue(productId, pageable);
         List<ReviewDTO> reviewDTOs = reviewPage.getContent()
                 .stream()
                 .map(this::convertToDto)

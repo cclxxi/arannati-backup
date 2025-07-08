@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -34,7 +35,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
 
         // Generate a unique filename to prevent collisions
-        String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+        String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String fileExtension = getFileExtension(originalFilename);
         String newFilename = UUID.randomUUID().toString() + fileExtension;
 

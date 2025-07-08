@@ -41,8 +41,8 @@ public class ChatServiceImpl implements ChatService {
                 .recipient(recipient)
                 .messageType(MessageType.DIRECT)
                 .read(false)
-                .isBroadcast(false)
-                .isSystemMessage(false)
+                .broadcast(false)
+                .systemMessage(false)
                 .build();
 
         message = messageRepository.save(message);
@@ -78,8 +78,8 @@ public class ChatServiceImpl implements ChatService {
                     .recipient(admin)
                     .messageType(MessageType.SUPPORT_REQUEST)
                     .read(false)
-                    .isBroadcast(true)
-                    .isSystemMessage(false)
+                    .broadcast(true)
+                    .systemMessage(false)
                     .build();
 
             broadcastMessages.add(message);
@@ -117,8 +117,8 @@ public class ChatServiceImpl implements ChatService {
                 .recipient(user)
                 .messageType(MessageType.DIRECT)
                 .read(false)
-                .isBroadcast(false)
-                .isSystemMessage(false)
+                .broadcast(false)
+                .systemMessage(false)
                 .originalMessageId(originalMessageId)
                 .build();
 
@@ -157,8 +157,8 @@ public class ChatServiceImpl implements ChatService {
                 .recipient(cosmetologist)
                 .messageType(MessageType.SYSTEM_DECLINE)
                 .read(false)
-                .isBroadcast(false)
-                .isSystemMessage(true)
+                .broadcast(false)
+                .systemMessage(true)
                 .build();
 
         declineMessage = messageRepository.save(declineMessage);
@@ -279,15 +279,15 @@ public class ChatServiceImpl implements ChatService {
     public List<Long> getAvailableAdminsForUser(Long userId) {
         List<User> allAdmins = userService.findByRoleAndActiveIsTrue("ADMIN").stream()
                 .map(userService::convertToEntity)
-                .collect(Collectors.toList());
+                .toList();
         List<String> existingChatIds = messageRepository.findChatIdsWithUser(userId);
 
         return allAdmins.stream()
-                .filter(admin -> {
-                    String chatId = generateChatId(userId, admin.getId());
+                .map(User::getId)
+                .filter(id -> {
+                    String chatId = generateChatId(userId, id);
                     return !existingChatIds.contains(chatId);
                 })
-                .map(User::getId)
                 .collect(Collectors.toList());
     }
 
