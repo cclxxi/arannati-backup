@@ -26,6 +26,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/catalog")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class CatalogApiController extends BaseApiController {
 
     private final ProductService productService;

@@ -25,6 +25,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class AdminApiController extends BaseApiController {
 
     private final UserService userService;

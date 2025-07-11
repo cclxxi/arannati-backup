@@ -22,6 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class CartApiController extends BaseApiController {
 
     private final CartService cartService;

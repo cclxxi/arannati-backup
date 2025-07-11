@@ -25,6 +25,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/materials")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class MaterialApiController extends BaseApiController {
 
     private static final String MATERIALS_DIRECTORY = "materials";

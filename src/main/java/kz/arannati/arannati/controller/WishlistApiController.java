@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/wishlist")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class WishlistApiController extends BaseApiController {
 
     private final WishlistService wishlistService;

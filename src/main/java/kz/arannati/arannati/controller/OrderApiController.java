@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class OrderApiController extends BaseApiController {
 
     private final OrderService orderService;

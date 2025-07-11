@@ -23,6 +23,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/messages")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class ChatApiController extends BaseApiController {
 
     private final ChatService chatService;

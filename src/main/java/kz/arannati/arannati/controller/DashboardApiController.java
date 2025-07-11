@@ -26,6 +26,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class DashboardApiController extends BaseApiController {
 
     private final UserService userService;

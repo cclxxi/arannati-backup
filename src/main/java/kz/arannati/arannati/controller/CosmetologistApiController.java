@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/cosmetologist")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class CosmetologistApiController extends BaseApiController {
 
     private final UserService userService;
@@ -217,10 +218,7 @@ public class CosmetologistApiController extends BaseApiController {
 
             // Enrich with cosmetologist pricing
             List<ProductDTO> enrichedProducts = allProducts.stream()
-                    .map(product -> {
-                        product.setEffectivePrice(pricingService.getEffectivePrice(product, cosmetologist));
-                        return product;
-                    })
+                    .peek(product -> product.setEffectivePrice(pricingService.getEffectivePrice(product, cosmetologist)))
                     .collect(Collectors.toList());
 
             ByteArrayOutputStream outputStream;
